@@ -2,10 +2,17 @@ const express = require('express');
 const dotenv = require('dotenv');
 const cors = require('cors');
 const connectDB = require('./db.js');
-const userRoutes = require('./routes/userRoutes');
+
 
 // Load environment variables from the root .env file
 dotenv.config({ path: '../.env' });
+
+
+
+const userRoutes = require('./routes/userRoutes');
+const plaidRoutes = require('./routes/plaidRoutes'); // <-- ADD THIS
+
+
 
 // Connect to database
 connectDB();
@@ -19,6 +26,7 @@ app.use(express.json());
 // --- ROUTES ---
 // When a request comes to /api/users, it will be handled by userRoutes
 app.use('/api/users', userRoutes);
+app.use('/api/plaid', plaidRoutes); // <-- ADD THIS
 
 // Define the port
 const PORT = process.env.PORT || 5000;
