@@ -1,9 +1,16 @@
 const express = require('express');
 const router = express.Router();
-const { createLinkToken } = require('../controllers/plaidController');
-const { protect } = require('../middlewares/authMiddleware'); // Import middleware
+const {
+  createLinkToken,
+  exchangePublicToken, // Import new functions
+  getTransactions,
+} = require('../controllers/plaidController');
+const { protect } = require('../middlewares/authMiddleware');
 
-// Any request to this route must first pass through the 'protect' middleware
 router.post('/create_link_token', protect, createLinkToken);
+
+// --- ADD THE TWO NEW ROUTES BELOW ---
+router.post('/exchange_public_token', protect, exchangePublicToken);
+router.get('/transactions', protect, getTransactions);
 
 module.exports = router;
