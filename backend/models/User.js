@@ -9,15 +9,24 @@ const userSchema = mongoose.Schema(
     email: {
       type: String,
       required: [true, 'Please add an email'],
-      unique: true, // Each email must be unique
+      unique: true,
     },
     password: {
       type: String,
       required: [true, 'Please add a password'],
     },
+    // --- ADD THESE TWO NEW FIELDS ---
+    plaidAccessToken: {
+      type: String,
+      required: false, // Not required at registration
+    },
+    plaidItemId: {
+      type: String,
+      required: false,
+    },
   },
   {
-    timestamps: true, // Automatically creates `createdAt` and `updatedAt` fields
+    timestamps: true,
   }
 );
 
