@@ -1,6 +1,6 @@
 const { Configuration, PlaidApi, PlaidEnvironments, Products, CountryCode } = require('plaid');
+const User = require('../models/User.js'); // Import the User model
 
-// --- THIS IS THE NEW, CORRECTED CONFIGURATION ---
 const configuration = new Configuration({
   basePath: PlaidEnvironments.sandbox,
   baseOptions: {
@@ -11,33 +11,66 @@ const configuration = new Configuration({
   },
 });
 
-// Initialize the Plaid client with the new configuration
 const plaidClient = new PlaidApi(configuration);
-// --- END OF NEW CONFIGURATION ---
 
-
-// @desc    Create a link_token for Plaid Link initialization
-// @route   POST /api/plaid/create_link_token
-// @access  Private
 const createLinkToken = async (req, res) => {
+    // ... (your existing createLinkToken function)
+};
+
+
+// --- ADD THE TWO NEW FUNCTIONS BELOW ---
+
+// @desc    Exchange a public_token for an access_token
+// @route   POST /api/plaid/exchange_public_token
+// @access  Private
+const exchangePublicToken = async (req, res) => {
   try {
-    const request = {
-      user: {
-        client_user_id: req.user.id,
-      },
-      client_name: 'PFM Dashboard',
-      products: [Products.Transactions],
-      country_codes: [CountryCode.Us],
-      language: 'en',
-    };
-    const response = await plaidClient.linkTokenCreate(request);
-    res.json(response.data);
+    const { public_token } = req.body;
+    const response = await plaidClient.itemPublicTokenExchange({
+      public_token: public_token,
+    });
+
+    const accessToken = response.data.access_token;
+    const itemId = response.data.item_id;
+
+    // Save the credentials to the user's document in the database
+    await User.findByIdAndUpdate(req.user.id, {
+      plaidAccessToken: accessToken,
+      plaidItemId: itemId,
+    });
+
+    res.status(200).json({ message: 'Access token saved successfully.' });
   } catch (error) {
-    console.error('Error creating link token:', error.response ? error.response.data : error.message);
-    res.status(500).json({ message: 'Failed to create link token' });
+    console.error('Error exchanging public token:', error.response ? error.response.data : error.message);
+    res.status(500).json({ message: 'Failed to exchange public token.' });
   }
 };
 
+
+// @desc    Fetch transactions for a user
+// @route   GET /api/plaid/transactions
+// @access  Private
+const getTransactions = async (req, res) => {
+  try {
+    const user = await User.findById(req.user.id);
+    if (!user || !user.plaidAccessToken) {
+      return res.status(400).json({ message: 'Plaid access token not found.' });
+    }
+
+    const request = {
+      access_token: user.plaidAccessToken,
+    };
+    const response = await plaidClient.transactionsSync(request);
+    res.json(response.data);
+  } catch (error) {
+    console.error('Error fetching transactions:', error.response ? error.response.data : error.message);
+    res.status(500).json({ message: 'Failed to fetch transactions.' });
+  }
+};
+
+
 module.exports = {
   createLinkToken,
+  exchangePublicToken, // Export the new function
+  getTransactions,      // Export the new function
 };
