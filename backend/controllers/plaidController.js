@@ -69,8 +69,29 @@ const getTransactions = async (req, res) => {
 };
 
 
+const getAccounts = async (req, res) => {
+  try {
+    const user = await User.findById(req.user.id);
+    if (!user || !user.plaidAccessToken) {
+      return res.status(400).json({ message: 'Plaid access token not found.' });
+    }
+
+
+    const request = {
+      access_token: user.plaidAccessToken,
+    };
+    const response = await plaidClient.accountsGet(request);
+    res.json(response.data.accounts);
+  } catch (error) {
+    console.error('Error fetching accounts:', error.response ? error.response.data : error.message);
+    res.status(500).json({ message: 'Failed to fetch accounts.' });
+  }
+};
+
+
 module.exports = {
   createLinkToken,
   exchangePublicToken, // Export the new function
-  getTransactions,      // Export the new function
+  getTransactions,
+  getAccounts,      // Export the new function
 };
