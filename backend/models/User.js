@@ -15,7 +15,6 @@ const userSchema = mongoose.Schema(
       type: String,
       required: [true, 'Please add a password'],
     },
-    // --- ADD THESE TWO NEW FIELDS ---
     plaidAccessToken: {
       type: String,
       required: false, // Not required at registration
@@ -24,9 +23,16 @@ const userSchema = mongoose.Schema(
       type: String,
       required: false,
     },
+    // --- ADD THIS NEW FIELD FOR BUDGETS ---
+    budgets: [
+      {
+        category: { type: String, required: true },
+        limit: { type: Number, required: true },
+      },
+    ],
   },
   {
-    timestamps: true,
+    timestamps: true, // Automatically creates createdAt and updatedAt fields
   }
 );
 
