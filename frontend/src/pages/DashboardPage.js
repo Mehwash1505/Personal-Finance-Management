@@ -6,11 +6,12 @@ const DashboardPage = () => {
   const [accounts, setAccounts] = useState([]);
   const [linkToken, setLinkToken] = useState(null);
 
-  // Function to fetch accounts
+  // This function fetches the user's linked bank accounts.
   const fetchAccounts = async () => {
     try {
-      // Get user from local storage to access the token
       const user = JSON.parse(localStorage.getItem('user'));
+      if (!user || !user.token) return; // Guard clause
+
       const config = {
         headers: {
           Authorization: `Bearer ${user.token}`,
@@ -20,23 +21,25 @@ const DashboardPage = () => {
       const response = await axios.get('http://localhost:5001/api/plaid/accounts', config);
       setAccounts(response.data);
     } catch (error) {
-      // --- REPLACE YOUR CATCH BLOCK WITH THIS ---
-      if (error.response && error.response.status === 400) {
-        // This is an expected case for users who haven't linked an account yet.
-        // We can just set accounts to an empty array and not log an error.
+      // This is the correct place to gracefully handle the "no token" error.
+      if (error.response && error.response.data && error.response.data.message === 'Plaid access token not found.') {
+        // This is expected if the user has no linked accounts yet. Do nothing.
         setAccounts([]);
       } else {
-        // For any other unexpected error, we'll still log it.
+        // Log any other unexpected errors.
         console.error('Failed to fetch accounts', error.response ? error.response.data : error.message);
       }
     }
   };
 
-  // 1. Generate a link_token
+  // This hook runs once when the component mounts.
   useEffect(() => {
+    // 1. Generate a link_token for the Plaid Link component.
     const generateToken = async () => {
       try {
         const user = JSON.parse(localStorage.getItem('user'));
+        if (!user || !user.token) return;
+
         const config = {
           headers: {
             Authorization: `Bearer ${user.token}`,
@@ -48,15 +51,16 @@ const DashboardPage = () => {
         console.error('Failed to create link token', error);
       }
     };
+    
     generateToken();
-    fetchAccounts(); // Fetch accounts on initial load
+    fetchAccounts(); // Fetch accounts on the initial page load.
   }, []);
 
-  // 2. Handle the success of the Plaid Link flow
+  // 2. Initialize the Plaid Link flow.
   const { open, ready } = usePlaidLink({
     token: linkToken,
     onSuccess: (public_token, metadata) => {
-      // Exchange public_token for an access_token
+      // This function runs when the user successfully links an account.
       const exchangeToken = async () => {
         try {
           const user = JSON.parse(localStorage.getItem('user'));
@@ -65,20 +69,14 @@ const DashboardPage = () => {
               Authorization: `Bearer ${user.token}`,
             },
           };
+          // 3. Exchange the public_token for an access_token.
           await axios.post('http://localhost:5001/api/plaid/exchange_public_token', { public_token }, config);
-          // 4. Fetch accounts again now that a new one has been linked
+          // 4. Fetch the accounts list again to show the newly linked account.
           fetchAccounts();
         } catch (error) {
-              console.log("Inspecting the full error object:", error);
-              if (error.response && error.response.status === 400) {
-                  // This is an expected case for users who haven't linked an account yet.
-                  // We can just set accounts to an empty array and not log an error.
-                  setAccounts([]);
-              } else {
-                  // For any other unexpected error, we'll still log it.
-                  console.error('Failed to fetch accounts', error.response ? error.response.data : error.message);
-              }
-          }
+          // This catch block handles errors during the token exchange.
+          console.error('Failed to exchange public token', error.response ? error.response.data : error.message);
+        }
       };
       exchangeToken();
     },
