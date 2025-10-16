@@ -5,6 +5,7 @@ import axios from 'axios';
 import BudgetForm from '../components/BudgetForm';
 import BudgetStatus from '../components/BudgetStatus';
 import MonthlySummaryChart from '../components/MonthlySummaryChart';
+import Spinner from '../components/Spinner';
 
 const DashboardPage = () => {
   const [transactions, setTransactions] = useState([]);
@@ -12,7 +13,10 @@ const DashboardPage = () => {
   const [budgets, setBudgets] = useState([]);
   const [monthlySummary, setMonthlySummary] = useState([]);
   const [linkToken, setLinkToken] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
 
+
+  
   const getAuthConfig = useCallback(() => {
     const user = JSON.parse(localStorage.getItem('user'));
     if (!user || !user.token) return null;
@@ -24,8 +28,12 @@ const DashboardPage = () => {
   }, []);
 
   const fetchData = useCallback(async () => {
+    setIsLoading(true);
     const config = getAuthConfig();
-    if (!config) return;
+    if (!config) {
+      setIsLoading(false);
+      return;
+    } 
 
     try {
       const [transRes, sumRes, budRes, monthRes] = await Promise.all([
@@ -44,6 +52,8 @@ const DashboardPage = () => {
       } else {
         console.error("Failed to fetch data", error);
       }
+    } finally {
+      setIsLoading(false);
     }
   }, [getAuthConfig]);
 
@@ -81,6 +91,10 @@ const DashboardPage = () => {
   
   const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#AF19FF', '#FF1919', '#8884d8'];
 
+  if (isLoading) {
+    return <Spinner />; // <-- Show spinner if loading
+  }
+  
   return (
     <div className="p-4">
       <div className="flex justify-between items-center mb-6">
@@ -111,7 +125,7 @@ const DashboardPage = () => {
                     nameKey="name" 
                     cx="50%" 
                     cy="50%" // Moves the pie up to make room for the legend
-                    outerRadius={90} // Reduces the pie size to prevent clipping
+                    outerRadius={85} // Reduces the pie size to prevent clipping
                   >
                     {summary.map((entry, index) => (
                       <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
