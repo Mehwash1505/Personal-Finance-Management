@@ -21,7 +21,7 @@ app.use(cors());
 app.use(express.json());
 
 
-// --- ADD THIS LOGGING MIDDLEWARE --- ✅
+// --- ADD THIS LOGGING MIDDLEWARE --- 
 // This will print every incoming request to your backend terminal.
 app.use((req, res, next) => {
   console.log(`[${new Date().toISOString()}] ${req.method} ${req.url}`);
