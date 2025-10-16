@@ -1,12 +1,14 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import Message from '../components/Message'; // Make sure this import is present
 
 const LoginPage = () => {
   const [formData, setFormData] = useState({
     email: '',
     password: '',
   });
+  const [error, setError] = useState(''); // <-- 1. Add state for the error message
 
   const { email, password } = formData;
   const navigate = useNavigate();
@@ -20,6 +22,7 @@ const LoginPage = () => {
 
   const onSubmit = async (e) => {
     e.preventDefault();
+    setError(''); // Clear any previous errors on a new submission
 
     const userData = {
       email,
@@ -33,14 +36,19 @@ const LoginPage = () => {
         localStorage.setItem('user', JSON.stringify(response.data));
         navigate('/dashboard');
       }
-    } catch (error) {
-      console.error('Login failed:', error.response ? error.response.data : error.message);
+    } catch (err) {
+      // 2. Set the error state with the message from the backend
+      setError(err.response?.data?.message || 'Something went wrong');
     }
   };
 
   return (
     <div className="max-w-md mx-auto mt-10">
       <h1 className="text-3xl font-bold mb-5 text-center">Login</h1>
+      
+      {/* 3. Conditionally display the error message */}
+      {error && <Message>{error}</Message>} 
+      
       <form onSubmit={onSubmit} className="space-y-4">
         <div>
           <label className="block mb-1 font-medium">Email</label>
