@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import Message from '../components/Message'; // Make sure this import is present
 
 const RegisterPage = () => {
   const [formData, setFormData] = useState({
@@ -8,6 +9,7 @@ const RegisterPage = () => {
     email: '',
     password: '',
   });
+  const [error, setError] = useState(''); // <-- 1. Add state for the error message
 
   const { name, email, password } = formData;
   const navigate = useNavigate();
@@ -21,6 +23,7 @@ const RegisterPage = () => {
 
   const onSubmit = async (e) => {
     e.preventDefault();
+    setError(''); // Clear previous errors on a new submission
 
     const userData = {
       name,
@@ -32,20 +35,22 @@ const RegisterPage = () => {
       const response = await axios.post('http://localhost:5001/api/users/register', userData);
 
       if (response.data) {
-        // Store the user (including the token) in local storage
         localStorage.setItem('user', JSON.stringify(response.data));
-        // Redirect to the dashboard
         navigate('/dashboard');
       }
-    } catch (error) {
-      console.error('Registration failed:', error.response ? error.response.data : error.message);
-      // You can add logic here to show an error message to the user
+    } catch (err) {
+      // 2. Set the error state with the message from the backend
+      setError(err.response?.data?.message || 'Something went wrong');
     }
   };
 
   return (
     <div className="max-w-md mx-auto mt-10">
       <h1 className="text-3xl font-bold mb-5 text-center">Register</h1>
+      
+      {/* 3. Conditionally display the error message */}
+      {error && <Message>{error}</Message>}
+      
       <form onSubmit={onSubmit} className="space-y-4">
         <div>
           <label className="block mb-1 font-medium">Name</label>
