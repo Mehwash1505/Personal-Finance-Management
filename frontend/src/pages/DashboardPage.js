@@ -4,11 +4,13 @@ import { PieChart, Pie, Cell, Tooltip, Legend, ResponsiveContainer } from 'recha
 import axios from 'axios';
 import BudgetForm from '../components/BudgetForm';
 import BudgetStatus from '../components/BudgetStatus';
+import MonthlySummaryChart from '../components/MonthlySummaryChart';
 
 const DashboardPage = () => {
   const [transactions, setTransactions] = useState([]);
   const [summary, setSummary] = useState([]);
-  const [budgets, setBudgets] = useState([]); // <-- 1. Add new state for budgets
+  const [budgets, setBudgets] = useState([]);
+  const [monthlySummary, setMonthlySummary] = useState([]);
   const [linkToken, setLinkToken] = useState(null);
 
   const getAuthConfig = useCallback(() => {
@@ -21,20 +23,21 @@ const DashboardPage = () => {
     };
   }, []);
 
-  // 2. Update to fetch all data, including budgets
   const fetchData = useCallback(async () => {
     const config = getAuthConfig();
     if (!config) return;
 
     try {
-      const [transRes, sumRes, budRes] = await Promise.all([
+      const [transRes, sumRes, budRes, monthRes] = await Promise.all([
         axios.get('http://localhost:5001/api/plaid/transactions', config),
         axios.get('http://localhost:5001/api/plaid/summary', config),
-        axios.get('http://localhost:5001/api/budgets', config), // Fetches budgets
+        axios.get('http://localhost:5001/api/budgets', config),
+        axios.get('http://localhost:5001/api/plaid/monthly-summary', config),
       ]);
       setTransactions(transRes.data.added);
       setSummary(sumRes.data);
-      setBudgets(budRes.data); // Sets the budget state
+      setBudgets(budRes.data);
+      setMonthlySummary(monthRes.data);
     } catch (error) {
       if (error.response && error.response.status === 400) {
         // Expected if no account is linked
@@ -87,9 +90,8 @@ const DashboardPage = () => {
         </button>
       </div>
 
-      {/* 3. Update the layout */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        {/* --- Left Column for Budgets and Chart --- */}
+        {/* --- Left Column --- */}
         <div className="md:col-span-1 space-y-6">
           <div className="bg-white p-4 rounded-lg shadow">
             <BudgetForm onBudgetSet={fetchData} />
@@ -101,38 +103,50 @@ const DashboardPage = () => {
             <h2 className="text-xl font-semibold mb-4">Spending by Category</h2>
             {summary.length > 0 ? (
               <ResponsiveContainer width="100%" height={300}>
-                <PieChart margin={{ top: 20 }}>
-                  <Pie data={summary} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={100}>
+                {/* --- THIS IS THE CORRECTED PIE CHART --- */}
+                <PieChart>
+                  <Pie 
+                    data={summary} 
+                    dataKey="value" 
+                    nameKey="name" 
+                    cx="50%" 
+                    cy="50%" // Moves the pie up to make room for the legend
+                    outerRadius={90} // Reduces the pie size to prevent clipping
+                  >
                     {summary.map((entry, index) => (
                       <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                     ))}
                   </Pie>
                   <Tooltip formatter={(value) => `$${value.toFixed(2)}`} />
-                  <Legend layout="horizontal" verticalAlign="bottom" align="center" wrapperStyle={{ paddingTop: '20px' }} /> 
+                  <Legend verticalAlign="bottom" /> 
                 </PieChart>
+                {/* --- END OF CORRECTION --- */}
               </ResponsiveContainer>
             ) : <p>No spending data to display.</p>}
           </div>
         </div>
 
-        {/* --- Right Column for Transactions --- */}
-        <div className="md:col-span-2 bg-white p-4 rounded-lg shadow">
-          <h2 className="text-xl font-semibold mb-4">Recent Transactions</h2>
-          <ul className="space-y-3 h-96 overflow-y-auto">
-            {transactions.length > 0 ? (
-              transactions.map((t) => (
-                <li key={t.transaction_id} className="flex justify-between items-center border-b pb-2">
-                  <div>
-                    <p className="font-medium">{t.name}</p>
-                    <p className="text-sm text-gray-500">{t.personal_finance_category?.primary || 'Uncategorized'}</p>
-                  </div>
-                  <p className={`font-semibold ${t.amount < 0 ? 'text-green-600' : 'text-red-600'}`}>
-                    {t.amount < 0 ? `+$${Math.abs(t.amount).toFixed(2)}` : `-$${t.amount.toFixed(2)}`}
-                  </p>
-                </li>
-              ))
-            ) : <p>No transactions to display.</p>}
-          </ul>
+        {/* --- Right Column --- */}
+        <div className="md:col-span-2 space-y-6">
+          <MonthlySummaryChart data={monthlySummary} />
+          <div className="bg-white p-4 rounded-lg shadow">
+            <h2 className="text-xl font-semibold mb-4">Recent Transactions</h2>
+            <ul className="space-y-3 h-[400px] overflow-y-auto">
+             {transactions.length > 0 ? (
+               transactions.map((t) => (
+                 <li key={t.transaction_id} className="flex justify-between items-center border-b pb-2">
+                   <div>
+                     <p className="font-medium">{t.name}</p>
+                     <p className="text-sm text-gray-500">{t.personal_finance_category?.primary || 'Uncategorized'}</p>
+                   </div>
+                   <p className={`font-semibold ${t.amount < 0 ? 'text-green-600' : 'text-red-600'}`}>
+                     {t.amount < 0 ? `+$${Math.abs(t.amount).toFixed(2)}` : `-$${t.amount.toFixed(2)}`}
+                   </p>
+                 </li>
+               ))
+             ) : <p>No transactions to display.</p>}
+           </ul>
+          </div>
         </div>
       </div>
     </div>
