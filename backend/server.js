@@ -10,6 +10,7 @@ dotenv.config({ path: path.resolve(__dirname, '../.env') });
 // Require your routes AFTER loading the .env file
 const userRoutes = require('./routes/userRoutes');
 const plaidRoutes = require('./routes/plaidRoutes');
+const budgetRoutes = require('./routes/budgetRoutes');
 
 // Connect to database
 connectDB();
@@ -34,6 +35,7 @@ app.use((req, res, next) => {
 // When a request comes to /api/users, it will be handled by userRoutes
 app.use('/api/users', userRoutes);
 app.use('/api/plaid', plaidRoutes);
+app.use('/api/budgets', budgetRoutes);
 
 // Define the port
 const PORT = process.env.PORT || 5000;
