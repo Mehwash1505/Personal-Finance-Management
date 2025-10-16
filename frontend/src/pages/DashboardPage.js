@@ -1,110 +1,131 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { usePlaidLink } from 'react-plaid-link';
+import { PieChart, Pie, Cell, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import axios from 'axios';
 
 const DashboardPage = () => {
-  const [accounts, setAccounts] = useState([]);
+  const [transactions, setTransactions] = useState([]);
+  const [summary, setSummary] = useState([]);
   const [linkToken, setLinkToken] = useState(null);
 
-  // This function fetches the user's linked bank accounts.
-  const fetchAccounts = async () => {
+  const getAuthConfig = useCallback(() => {
+    const user = JSON.parse(localStorage.getItem('user'));
+    if (!user || !user.token) return null;
+    return {
+      headers: {
+        Authorization: `Bearer ${user.token}`,
+      },
+    };
+  }, []);
+
+  const fetchData = useCallback(async () => {
+    const config = getAuthConfig();
+    if (!config) return;
+
     try {
-      const user = JSON.parse(localStorage.getItem('user'));
-      if (!user || !user.token) return; // Guard clause
-
-      const config = {
-        headers: {
-          Authorization: `Bearer ${user.token}`,
-        },
-      };
-
-      const response = await axios.get('http://localhost:5001/api/plaid/accounts', config);
-      setAccounts(response.data);
+      const [transRes, sumRes] = await Promise.all([
+        axios.get('http://localhost:5001/api/plaid/transactions', config),
+        axios.get('http://localhost:5001/api/plaid/summary', config)
+      ]);
+      setTransactions(transRes.data.added);
+      setSummary(sumRes.data);
     } catch (error) {
-      // This is the correct place to gracefully handle the "no token" error.
-      if (error.response && error.response.data && error.response.data.message === 'Plaid access token not found.') {
-        // This is expected if the user has no linked accounts yet. Do nothing.
-        setAccounts([]);
+      if (error.response && error.response.status === 400) {
+        // This is expected if no account is linked, do nothing.
       } else {
-        // Log any other unexpected errors.
-        console.error('Failed to fetch accounts', error.response ? error.response.data : error.message);
+        console.error("Failed to fetch data", error);
       }
     }
-  };
+  }, [getAuthConfig]);
 
-  // This hook runs once when the component mounts.
   useEffect(() => {
-    // 1. Generate a link_token for the Plaid Link component.
     const generateToken = async () => {
+      const config = getAuthConfig();
+      if (!config) return;
       try {
-        const user = JSON.parse(localStorage.getItem('user'));
-        if (!user || !user.token) return;
-
-        const config = {
-          headers: {
-            Authorization: `Bearer ${user.token}`,
-          },
-        };
         const response = await axios.post('http://localhost:5001/api/plaid/create_link_token', {}, config);
         setLinkToken(response.data.link_token);
       } catch (error) {
         console.error('Failed to create link token', error);
       }
     };
-    
     generateToken();
-    fetchAccounts(); // Fetch accounts on the initial page load.
-  }, []);
+    fetchData();
+  }, [fetchData, getAuthConfig]);
 
-  // 2. Initialize the Plaid Link flow.
   const { open, ready } = usePlaidLink({
     token: linkToken,
     onSuccess: (public_token, metadata) => {
-      // This function runs when the user successfully links an account.
       const exchangeToken = async () => {
+        const config = getAuthConfig();
+        if (!config) return;
         try {
-          const user = JSON.parse(localStorage.getItem('user'));
-          const config = {
-            headers: {
-              Authorization: `Bearer ${user.token}`,
-            },
-          };
-          // 3. Exchange the public_token for an access_token.
           await axios.post('http://localhost:5001/api/plaid/exchange_public_token', { public_token }, config);
-          // 4. Fetch the accounts list again to show the newly linked account.
-          fetchAccounts();
+          fetchData(); 
         } catch (error) {
-          // This catch block handles errors during the token exchange.
-          console.error('Failed to exchange public token', error.response ? error.response.data : error.message);
+          console.error('Failed to exchange public token', error);
         }
       };
       exchangeToken();
     },
   });
+  
+  const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#AF19FF', '#FF1919', '#8884d8'];
 
   return (
-    <div>
-      <h1 className="text-3xl font-bold">Dashboard</h1>
-      
-      <button onClick={() => open()} disabled={!ready} className="my-4 px-4 py-2 bg-blue-500 text-white rounded disabled:bg-gray-400">
-        Link a Bank Account
-      </button>
+    <div className="p-4">
+      <div className="flex justify-between items-center mb-6">
+        <h1 className="text-3xl font-bold">Dashboard</h1>
+        <button onClick={() => open()} disabled={!ready} className="px-4 py-2 bg-blue-500 text-white rounded disabled:bg-gray-400">
+          Link a Bank Account
+        </button>
+      </div>
 
-      <div className="mt-5">
-        <h2 className="text-2xl font-semibold">My Accounts</h2>
-        {accounts.length > 0 ? (
-          <ul className="mt-2 space-y-2">
-            {accounts.map((account) => (
-              <li key={account.account_id} className="p-4 bg-gray-100 rounded-md">
-                <p className="font-bold">{account.name}</p>
-                <p>Type: {account.subtype}</p>
-                <p>Balance: ${account.balances.current.toLocaleString()}</p>
-              </li>
-            ))}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="md:col-span-1 bg-white p-4 rounded-lg shadow">
+          <h2 className="text-xl font-semibold mb-4">Spending by Category</h2>
+          {summary.length > 0 ? (
+            <ResponsiveContainer width="100%" height={300}>
+              {/* --- THIS IS THE ONLY PART THAT CHANGED --- */}
+              <PieChart margin={{ top: 20 }}>
+                <Pie 
+                  data={summary} 
+                  dataKey="value" 
+                  nameKey="name" 
+                  cx="50%" 
+                  cy="50%" 
+                  outerRadius={100}
+                >
+                  {summary.map((entry, index) => (
+                    <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                  ))}
+                </Pie>
+                <Tooltip formatter={(value) => `$${value.toFixed(2)}`} />
+                <Legend layout="horizontal" verticalAlign="bottom" align="center" wrapperStyle={{ paddingTop: '20px' }} /> 
+              </PieChart>
+              {/* --- END OF CHANGE --- */}
+            </ResponsiveContainer>
+          ) : <p>No spending data to display.</p>}
+        </div>
+
+        <div className="md:col-span-2 bg-white p-4 rounded-lg shadow">
+          <h2 className="text-xl font-semibold mb-4">Recent Transactions</h2>
+          <ul className="space-y-3 h-96 overflow-y-auto">
+            {transactions.length > 0 ? (
+              transactions.map((t) => (
+                <li key={t.transaction_id} className="flex justify-between items-center border-b pb-2">
+                  <div>
+                    <p className="font-medium">{t.name}</p>
+                    <p className="text-sm text-gray-500">{t.personal_finance_category?.primary || 'Uncategorized'}</p>
+                  </div>
+                  <p className={`font-semibold ${t.amount < 0 ? 'text-green-600' : 'text-red-600'}`}>
+                    {t.amount < 0 ? `+$${Math.abs(t.amount).toFixed(2)}` : `-$${t.amount.toFixed(2)}`}
+                  </p>
+                </li>
+              ))
+            ) : <p>No transactions to display.</p>}
           </ul>
-        ) : (
-          <p>You have no accounts linked yet.</p>
-        )}
+        </div>
       </div>
     </div>
   );
