@@ -17,10 +17,7 @@ const plaidClient = new PlaidApi(configuration);
 // @route   POST /api/plaid/create_link_token
 // @access  Private
 const createLinkToken = async (req, res) => {
-  // --- ADDED LOGGING STATEMENTS FOR DEBUGGING ---
-  console.log('--- Inside createLinkToken controller ---');
   try {
-    console.log('User ID:', req.user.id); // Log the user ID to ensure it's there
     const request = {
       user: {
         client_user_id: req.user.id,
@@ -30,11 +27,7 @@ const createLinkToken = async (req, res) => {
       country_codes: [CountryCode.Us],
       language: 'en',
     };
-
-    console.log('About to call Plaid API...');
     const response = await plaidClient.linkTokenCreate(request);
-    console.log('...Plaid API call successful!'); // <-- We are checking if it reaches this line
-
     res.json(response.data);
   } catch (error) {
     console.error('ERROR in createLinkToken:', error.response ? error.response.data : error.message);
@@ -109,9 +102,47 @@ const getAccounts = async (req, res) => {
   }
 };
 
+// @desc    Get a summary of spending by category
+// @route   GET /api/plaid/summary
+// @access  Private
+const getDataSummary = async (req, res) => {
+  try {
+    const user = await User.findById(req.user.id);
+    if (!user || !user.plaidAccessToken) {
+      return res.status(400).json({ message: 'Plaid access token not found.' });
+    }
+
+    const request = { access_token: user.plaidAccessToken };
+    const response = await plaidClient.transactionsSync(request);
+    const transactions = response.data.added;
+
+    // Process the data for the chart
+    const summary = transactions.reduce((acc, curr) => {
+      // We only want to track expenses (positive amounts in Plaid)
+      if (curr.amount > 0) {
+        const category = curr.personal_finance_category.primary;
+        acc[category] = (acc[category] || 0) + curr.amount;
+      }
+      return acc;
+    }, {});
+
+    // Convert the summary object to an array that Recharts can use
+    const chartData = Object.keys(summary).map(key => ({
+      name: key,
+      value: parseFloat(summary[key].toFixed(2)),
+    }));
+
+    res.json(chartData);
+  } catch (error) {
+    console.error('Error fetching summary:', error.response ? error.response.data : error.message);
+    res.status(500).json({ message: 'Failed to fetch summary.' });
+  }
+};
+
 module.exports = {
   createLinkToken,
   exchangePublicToken,
   getTransactions,
   getAccounts,
+  getDataSummary, // <-- Add this to your exports
 };
