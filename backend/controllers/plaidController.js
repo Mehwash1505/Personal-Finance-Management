@@ -116,9 +116,7 @@ const getDataSummary = async (req, res) => {
     const response = await plaidClient.transactionsSync(request);
     const transactions = response.data.added;
 
-    // Process the data for the chart
     const summary = transactions.reduce((acc, curr) => {
-      // We only want to track expenses (positive amounts in Plaid)
       if (curr.amount > 0) {
         const category = curr.personal_finance_category.primary;
         acc[category] = (acc[category] || 0) + curr.amount;
@@ -126,7 +124,6 @@ const getDataSummary = async (req, res) => {
       return acc;
     }, {});
 
-    // Convert the summary object to an array that Recharts can use
     const chartData = Object.keys(summary).map(key => ({
       name: key,
       value: parseFloat(summary[key].toFixed(2)),
@@ -139,10 +136,55 @@ const getDataSummary = async (req, res) => {
   }
 };
 
+// @desc    Get monthly income vs. expense summary
+// @route   GET /api/plaid/monthly-summary
+// @access  Private
+const getMonthlySummary = async (req, res) => {
+  try {
+    const user = await User.findById(req.user.id);
+    if (!user || !user.plaidAccessToken) {
+      return res.status(400).json({ message: 'Plaid access token not found.' });
+    }
+
+    const request = { access_token: user.plaidAccessToken };
+    const response = await plaidClient.transactionsSync(request);
+    const transactions = response.data.added;
+
+    const monthlyData = transactions.reduce((acc, t) => {
+      const month = t.date.substring(0, 7); // Get "YYYY-MM"
+      if (!acc[month]) {
+        acc[month] = { income: 0, expenses: 0 };
+      }
+      if (t.amount < 0) { // Inflow/Income in Plaid is a negative amount
+        acc[month].income += Math.abs(t.amount);
+      } else { // Outflow/Expense
+        acc[month].expenses += t.amount;
+      }
+      return acc;
+    }, {});
+
+    const chartData = Object.keys(monthlyData).map(monthStr => {
+      const date = new Date(monthStr + '-02'); // Use day 2 to avoid timezone issues
+      return {
+        month: date.toLocaleString('default', { month: 'short', year: 'numeric' }),
+        Income: parseFloat(monthlyData[monthStr].income.toFixed(2)),
+        Expenses: parseFloat(monthlyData[monthStr].expenses.toFixed(2)),
+      };
+    }).sort((a, b) => new Date(a.month) - new Date(b.month));
+
+    res.json(chartData);
+  } catch (error) {
+    console.error('Error fetching monthly summary:', error.response ? error.response.data : error.message);
+    res.status(500).json({ message: 'Failed to fetch monthly summary.' });
+  }
+};
+
+
 module.exports = {
   createLinkToken,
   exchangePublicToken,
   getTransactions,
   getAccounts,
-  getDataSummary, // <-- Add this to your exports
+  getDataSummary,
+  getMonthlySummary, //Add this to your exports
 };
