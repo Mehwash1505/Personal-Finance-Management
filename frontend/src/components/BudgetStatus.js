@@ -9,7 +9,7 @@ const BudgetStatus = ({ budgets, summary }) => {
 
   return (
     <div className="space-y-4">
-      <h3 className="text-lg font-semibold">Budget Status</h3>
+      <h3 className="text-lg font-semibold text-text-light">Budget Status</h3>
       {budgets.length > 0 ? (
         budgets.map((budget) => {
           const spent = spendingMap[budget.category] || 0;
@@ -19,12 +19,12 @@ const BudgetStatus = ({ budgets, summary }) => {
           return (
             <div key={budget.category}>
               <div className="flex justify-between mb-1 text-sm">
-                <span className="font-medium">{budget.category.replace(/_/g, ' ')}</span>
-                <span className="text-gray-600">${spent.toFixed(2)} / ${budget.limit.toFixed(2)}</span>
+                <span className="font-medium text-text-light">{budget.category.replace(/_/g, ' ')}</span>
+                <span className="text-text-muted">${spent.toFixed(2)} / ${budget.limit.toFixed(2)}</span>
               </div>
-              <div className="w-full bg-gray-200 rounded-full h-4">
+              <div className="w-full bg-border rounded-full h-2.5">
                 <div
-                  className={`h-4 rounded-full ${isOverBudget ? 'bg-red-500' : 'bg-green-500'}`}
+                  className={`h-2.5 rounded-full ${isOverBudget ? 'bg-danger' : 'bg-secondary'}`}
                   style={{ width: `${Math.min(progress, 100)}%` }}
                 ></div>
               </div>
@@ -32,7 +32,7 @@ const BudgetStatus = ({ budgets, summary }) => {
           );
         })
       ) : (
-        <p className="text-sm text-gray-500">No budgets set yet. Use the form above to add one.</p>
+        <p className="text-sm text-text-muted">No budgets set yet. Use the form above to add one.</p>
       )}
     </div>
   );
