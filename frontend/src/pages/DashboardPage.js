@@ -6,6 +6,7 @@ import BudgetForm from '../components/BudgetForm';
 import BudgetStatus from '../components/BudgetStatus';
 import MonthlySummaryChart from '../components/MonthlySummaryChart';
 import Spinner from '../components/Spinner';
+import ManualTransactionForm from '../components/ManualTransactionForm';
 
 const DashboardPage = () => {
   const [transactions, setTransactions] = useState([]);
@@ -92,7 +93,7 @@ const DashboardPage = () => {
   const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#AF19FF', '#FF1919', '#8884d8'];
 
   if (isLoading) {
-    return <Spinner />; // <-- Show spinner if loading
+    return <Spinner />; 
   }
   
   return (
@@ -107,6 +108,9 @@ const DashboardPage = () => {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {/* --- Left Column --- */}
         <div className="md:col-span-1 space-y-6">
+          <div className="bg-white p-4 rounded-lg shadow">
+            <ManualTransactionForm onTransactionAdded={fetchData} />
+          </div>
           <div className="bg-white p-4 rounded-lg shadow">
             <BudgetForm onBudgetSet={fetchData} />
           </div>
@@ -124,8 +128,8 @@ const DashboardPage = () => {
                     dataKey="value" 
                     nameKey="name" 
                     cx="50%" 
-                    cy="50%" // Moves the pie up to make room for the legend
-                    outerRadius={85} // Reduces the pie size to prevent clipping
+                    cy="50%" // Vertically centered the pie
+                    outerRadius={85} // A size that fits well
                   >
                     {summary.map((entry, index) => (
                       <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
