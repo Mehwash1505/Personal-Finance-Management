@@ -12,12 +12,15 @@ code {
     monospace;
 } */
 
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-
-
 body {
-  @apply bg-gray-50; 
+  @apply bg-background text-text-light antialiased;
+  /* Subtle Aurora background effect */
+  background-image: radial-gradient(at 47% 33%, hsl(240, 20%, 25%) 0, transparent 59%), 
+                    radial-gradient(at 82% 65%, hsl(218, 89%, 20%) 0, transparent 55%);
 }
