@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import Message from '../components/Message'; // Make sure this import is present
+import Message from '../components/Message';
+import AuthContext from '../context/AuthContext';
 
 const RegisterPage = () => {
   const [formData, setFormData] = useState({
@@ -9,8 +10,8 @@ const RegisterPage = () => {
     email: '',
     password: '',
   });
-  const [error, setError] = useState(''); // <-- 1. Add state for the error message
-
+  const [error, setError] = useState('');
+  const { login } = useContext(AuthContext); // Get the login function from context
   const { name, email, password } = formData;
   const navigate = useNavigate();
 
@@ -23,7 +24,7 @@ const RegisterPage = () => {
 
   const onSubmit = async (e) => {
     e.preventDefault();
-    setError(''); // Clear previous errors on a new submission
+    setError('');
 
     const userData = {
       name,
@@ -35,11 +36,15 @@ const RegisterPage = () => {
       const response = await axios.post('http://localhost:5001/api/users/register', userData);
 
       if (response.data) {
-        localStorage.setItem('user', JSON.stringify(response.data));
+        // --- THIS IS THE FIX ---
+        // Instead of localStorage.setItem, we call the global login function.
+        // This updates the state for the whole app, including the Navbar.
+        login(response.data);
+        // --- END OF FIX ---
+        
         navigate('/dashboard');
       }
     } catch (err) {
-      // 2. Set the error state with the message from the backend
       setError(err.response?.data?.message || 'Something went wrong');
     }
   };
@@ -48,7 +53,6 @@ const RegisterPage = () => {
     <div className="max-w-md mx-auto mt-10">
       <h1 className="text-3xl font-bold mb-5 text-center">Register</h1>
       
-      {/* 3. Conditionally display the error message */}
       {error && <Message>{error}</Message>}
       
       <form onSubmit={onSubmit} className="space-y-4">
@@ -83,7 +87,7 @@ const RegisterPage = () => {
             onChange={onChange}
             className="w-full px-3 py-2 border border-gray-300 rounded-md"
             required
-          />
+        />
         </div>
         <button type="submit" className="w-full py-2 px-4 bg-blue-500 text-white font-semibold rounded-md hover:bg-blue-600">
           Register
