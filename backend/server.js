@@ -22,16 +22,6 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-
-// --- ADD THIS LOGGING MIDDLEWARE --- 
-// This will print every incoming request to your backend terminal.
-app.use((req, res, next) => {
-  console.log(`[${new Date().toISOString()}] ${req.method} ${req.url}`);
-  next();
-});
-// --- END OF LOGGING MIDDLEWARE ---
-
-
 // --- ROUTES ---
 // When a request comes to /api/users, it will be handled by userRoutes
 app.use('/api/users', userRoutes);
