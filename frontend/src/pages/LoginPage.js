@@ -1,15 +1,16 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import Message from '../components/Message'; // Make sure this import is present
+import Message from '../components/Message';
+import AuthContext from '../context/AuthContext';
 
 const LoginPage = () => {
   const [formData, setFormData] = useState({
     email: '',
     password: '',
   });
-  const [error, setError] = useState(''); // <-- 1. Add state for the error message
-
+  const [error, setError] = useState('');
+  const { login } = useContext(AuthContext); // Correctly getting the function
   const { email, password } = formData;
   const navigate = useNavigate();
 
@@ -22,7 +23,7 @@ const LoginPage = () => {
 
   const onSubmit = async (e) => {
     e.preventDefault();
-    setError(''); // Clear any previous errors on a new submission
+    setError('');
 
     const userData = {
       email,
@@ -33,11 +34,12 @@ const LoginPage = () => {
       const response = await axios.post('http://localhost:5001/api/users/login', userData);
 
       if (response.data) {
-        localStorage.setItem('user', JSON.stringify(response.data));
+        // --- THIS IS THE FIX ---
+        login(response.data); // Use the login function from the context
+        // --- END OF FIX ---
         navigate('/dashboard');
       }
     } catch (err) {
-      // 2. Set the error state with the message from the backend
       setError(err.response?.data?.message || 'Something went wrong');
     }
   };
@@ -45,10 +47,7 @@ const LoginPage = () => {
   return (
     <div className="max-w-md mx-auto mt-10">
       <h1 className="text-3xl font-bold mb-5 text-center">Login</h1>
-      
-      {/* 3. Conditionally display the error message */}
       {error && <Message>{error}</Message>} 
-      
       <form onSubmit={onSubmit} className="space-y-4">
         <div>
           <label className="block mb-1 font-medium">Email</label>
