@@ -1,13 +1,13 @@
-// File: src/components/Navbar.js
-import React from 'react';
+import React, { useContext } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import AuthContext from '../context/AuthContext';
 
 const Navbar = () => {
   const navigate = useNavigate();
-  const user = JSON.parse(localStorage.getItem('user'));
+  const { user, logout } = useContext(AuthContext);
 
   const onLogout = () => {
-    localStorage.removeItem('user');
+    logout();
     navigate('/login');
   };
 
@@ -17,6 +17,7 @@ const Navbar = () => {
         <Link to={user ? "/dashboard" : "/"} className="text-2xl font-bold hover:text-gray-300">
           PFM
         </Link>
+        
         <ul className="flex items-center space-x-6">
           {user ? (
             <>
