@@ -12,20 +12,19 @@ const Navbar = () => {
   };
 
   return (
-    <header className="bg-gray-800 text-white p-4 shadow-md">
-      <nav className="container mx-auto flex justify-between items-center">
-        <Link to={user ? "/dashboard" : "/"} className="text-2xl font-bold hover:text-gray-300">
+    <header className="bg-surface-dark border-b border-border-dark sticky top-0 z-10">
+      <nav className="container mx-auto flex justify-between items-center p-4">
+        <Link to={user ? "/dashboard" : "/"} className="text-2xl font-bold text-primary">
           PFM
         </Link>
-        
         <ul className="flex items-center space-x-6">
           {user ? (
             <>
               <li>
-                <span className="font-semibold">Welcome, {user.name}</span>
+                <span className="text-text-muted">Welcome, <span className="font-semibold text-text-light">{user.name}</span></span>
               </li>
               <li>
-                <button onClick={onLogout} className="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded">
+                <button onClick={onLogout} className="bg-danger hover:bg-opacity-90 text-white font-bold py-2 px-4 rounded-lg transition-colors">
                   Logout
                 </button>
               </li>
@@ -33,10 +32,12 @@ const Navbar = () => {
           ) : (
             <>
               <li>
-                <Link to="/login" className="hover:text-gray-300">Login</Link>
+                <Link to="/login" className="text-text-muted hover:text-primary font-medium transition-colors">Login</Link>
               </li>
               <li>
-                <Link to="/register" className="hover:text-gray-300">Register</Link>
+                <Link to="/register" className="bg-primary text-white font-bold py-2 px-4 rounded-lg hover:bg-primary-hover transition-colors">
+                  Register
+                </Link>
               </li>
             </>
           )}
