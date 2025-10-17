@@ -1,7 +1,121 @@
+
+//   const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#AF19FF', '#FF1919', '#8884d8'];
+//   const containerVariants = {
+//     hidden: { opacity: 0 },
+//     visible: {
+//       opacity: 1,
+//       transition: {
+//         staggerChildren: 0.1, // This makes children animate one by one
+//       },
+//     },
+//   };
+
+//   const itemVariants = {
+//     hidden: { y: 20, opacity: 0 },
+//     visible: { y: 0, opacity: 1 },
+//   };
+
+//   if (isLoading) {
+//     return <Spinner />; 
+//   }
+  
+//   return (
+//     <motion.div
+//       initial={{ opacity: 0 }}
+//       animate={{ opacity: 1 }}
+//       exit={{ opacity: 0 }}
+//       className="p-4"
+//     >
+//       <div className="flex justify-between items-center mb-6">
+//         <h1 className="text-3xl font-bold">Dashboard</h1>
+//         <button onClick={() => open()} disabled={!ready} className="px-4 py-2 bg-blue-500 text-white rounded disabled:bg-gray-400">
+//           Link a Bank Account
+//         </button>
+//       </div>
+
+//       <motion.div
+//         className="grid grid-cols-1 md:grid-cols-3 gap-6"
+//         variants={containerVariants}
+//         initial="hidden"
+//         animate="visible"
+//       >
+
+//         {/* --- Left Column --- */}
+//         <div className="md:col-span-1 space-y-6">
+//           <motion.div variants={itemVariants} className="bg-surface p-6 rounded-xl shadow-md">
+//             <ManualTransactionForm onTransactionAdded={fetchData} />
+//           </motion.div>
+//           <motion.div variants={itemVariants} className="bg-surface p-6 rounded-xl shadow-md">
+//             <BudgetForm onBudgetSet={fetchData} />
+//           </motion.div>
+//           <motion.div variants={itemVariants} className="bg-surface p-6 rounded-xl shadow-md">
+//             <BudgetStatus budgets={budgets} summary={summary} />
+//           </motion.div>
+//           <motion.div variants={itemVariants} className="bg-surface p-6 rounded-xl shadow-md">
+//             <h2 className="text-xl font-semibold mb-4">Spending by Category</h2>
+//             {summary.length > 0 ? (
+//               <ResponsiveContainer width="100%" height={300}>
+//                 {/* --- THIS IS THE CORRECTED PIE CHART --- */}
+//                 <PieChart>
+//                   <Pie 
+//                     data={summary} 
+//                     dataKey="value" 
+//                     nameKey="name" 
+//                     cx="50%" 
+//                     cy="50%" // Vertically centered the pie
+//                     outerRadius={85} // A size that fits well
+//                   >
+//                     {summary.map((entry, index) => (
+//                       <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+//                     ))}
+//                   </Pie>
+//                   <Tooltip formatter={(value) => `$${value.toFixed(2)}`} />
+//                   <Legend verticalAlign="bottom" height={36}/> 
+//                 </PieChart>
+//                 {/* --- END OF CORRECTION --- */}
+//               </ResponsiveContainer>
+//             ) : <p className='text-text-secondary'>No spending data to display.</p>}
+//           </motion.div>
+//         </div>
+
+//         {/* --- Right Column --- */}
+//         <div className="md:col-span-2 space-y-6">
+//           <motion.div variants={itemVariants}>
+//             <MonthlySummaryChart data={monthlySummary} />
+//           </motion.div>
+//           <motion.div variants={itemVariants} className="bg-surface p-6 rounded-xl shadow-md">
+//             <h2 className="text-xl font-semibold mb-4 text-text-primary">Recent Transactions</h2>
+//             <ul className="space-y-3 h-[400px] overflow-y-auto">
+//              {transactions.length > 0 ? (
+//                transactions.map((t) => (
+//                  <li key={t.transaction_id} className="flex justify-between items-center border-b border-gray-200 pb-2">
+//                    <div>
+//                      <p className="font-medium text-text-primary">{t.name}</p>
+//                      <p className="text-sm text-text-secondary">{t.personal_finance_category?.primary || 'Uncategorized'}</p>
+//                    </div>
+//                    <p className={`font-semibold ${t.amount < 0 ? 'text-secondary' : 'text-danger'}`}>
+//                      {t.amount < 0 ? `+$${Math.abs(t.amount).toFixed(2)}` : `-$${t.amount.toFixed(2)}`}
+//                    </p>
+//                  </li>
+//                ))
+//              ) : <p className="text-text-secondary">No transactions to display.</p>}
+//            </ul>
+//           </motion.div>
+//         </div>
+//       </motion.div>
+//     </motion.div>
+//   );
+// };
+
+// export default DashboardPage;
+
+
+
 import React, { useState, useEffect, useCallback } from 'react';
 import { usePlaidLink } from 'react-plaid-link';
 import { PieChart, Pie, Cell, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import axios from 'axios';
+import { motion } from 'framer-motion';
 import BudgetForm from '../components/BudgetForm';
 import BudgetStatus from '../components/BudgetStatus';
 import MonthlySummaryChart from '../components/MonthlySummaryChart';
@@ -15,9 +129,9 @@ const DashboardPage = () => {
   const [monthlySummary, setMonthlySummary] = useState([]);
   const [linkToken, setLinkToken] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
-
-
   
+
+  // data fetching functions: getAuthConfig, fetchData, useEffect, usePlaidLink
   const getAuthConfig = useCallback(() => {
     const user = JSON.parse(localStorage.getItem('user'));
     if (!user || !user.token) return null;
@@ -26,7 +140,8 @@ const DashboardPage = () => {
         Authorization: `Bearer ${user.token}`,
       },
     };
-  }, []);
+  }, []); 
+
 
   const fetchData = useCallback(async () => {
     setIsLoading(true);
@@ -73,6 +188,7 @@ const DashboardPage = () => {
     fetchData();
   }, [fetchData, getAuthConfig]);
 
+
   const { open, ready } = usePlaidLink({
     token: linkToken,
     onSuccess: (public_token, metadata) => {
@@ -90,84 +206,86 @@ const DashboardPage = () => {
     },
   });
   
-  const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#AF19FF', '#FF1919', '#8884d8'];
+  const COLORS = ['#3B82F6', '#10B981', '#F59E0B', '#EF4444', '#8B5CF6'];
 
-  if (isLoading) {
-    return <Spinner />; 
-  }
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: { opacity: 1, transition: { staggerChildren: 0.1 } },
+  };
+
+  const itemVariants = {
+    hidden: { y: 20, opacity: 0 },
+    visible: { y: 0, opacity: 1 },
+  };
+
+  if (isLoading) { return <Spinner />; }
   
   return (
-    <div className="p-4">
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-3xl font-bold">Dashboard</h1>
-        <button onClick={() => open()} disabled={!ready} className="px-4 py-2 bg-blue-500 text-white rounded disabled:bg-gray-400">
+    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="container mx-auto">
+      <div className="flex justify-between items-center my-6">
+        <h1 className="text-4xl font-bold text-text-light">Dashboard</h1>
+        <button onClick={() => open()} disabled={!ready} className="bg-primary text-white font-bold py-2 px-4 rounded-lg shadow-lg shadow-blue-500/20 hover:bg-primary-hover transition-all disabled:bg-gray-500 disabled:shadow-none">
           Link a Bank Account
         </button>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        {/* --- Left Column --- */}
-        <div className="md:col-span-1 space-y-6">
-          <div className="bg-white p-4 rounded-lg shadow">
+      <motion.div
+        className="grid grid-cols-1 lg:grid-cols-3 gap-6"
+        variants={containerVariants}
+        initial="hidden"
+        animate="visible"
+      >
+        <div className="lg:col-span-1 space-y-6">
+          <motion.div variants={itemVariants} className="bg-surface/80 backdrop-blur-xl border border-border p-6 rounded-xl shadow-2xl">
             <ManualTransactionForm onTransactionAdded={fetchData} />
-          </div>
-          <div className="bg-white p-4 rounded-lg shadow">
+          </motion.div>
+          <motion.div variants={itemVariants} className="bg-surface/80 backdrop-blur-xl border border-border p-6 rounded-xl shadow-2xl">
             <BudgetForm onBudgetSet={fetchData} />
-          </div>
-          <div className="bg-white p-4 rounded-lg shadow">
+          </motion.div>
+          <motion.div variants={itemVariants} className="bg-surface/80 backdrop-blur-xl border border-border p-6 rounded-xl shadow-2xl">
             <BudgetStatus budgets={budgets} summary={summary} />
-          </div>
-          <div className="bg-white p-4 rounded-lg shadow">
-            <h2 className="text-xl font-semibold mb-4">Spending by Category</h2>
-            {summary.length > 0 ? (
-              <ResponsiveContainer width="100%" height={300}>
-                {/* --- THIS IS THE CORRECTED PIE CHART --- */}
-                <PieChart>
-                  <Pie 
-                    data={summary} 
-                    dataKey="value" 
-                    nameKey="name" 
-                    cx="50%" 
-                    cy="50%" // Vertically centered the pie
-                    outerRadius={85} // A size that fits well
-                  >
-                    {summary.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                    ))}
-                  </Pie>
-                  <Tooltip formatter={(value) => `$${value.toFixed(2)}`} />
-                  <Legend verticalAlign="bottom" /> 
-                </PieChart>
-                {/* --- END OF CORRECTION --- */}
-              </ResponsiveContainer>
-            ) : <p>No spending data to display.</p>}
-          </div>
+          </motion.div>
         </div>
 
-        {/* --- Right Column --- */}
-        <div className="md:col-span-2 space-y-6">
-          <MonthlySummaryChart data={monthlySummary} />
-          <div className="bg-white p-4 rounded-lg shadow">
-            <h2 className="text-xl font-semibold mb-4">Recent Transactions</h2>
-            <ul className="space-y-3 h-[400px] overflow-y-auto">
+        <div className="lg:col-span-2 space-y-6">
+          <motion.div variants={itemVariants}>
+            <MonthlySummaryChart data={monthlySummary} />
+          </motion.div>
+          <motion.div variants={itemVariants} className="bg-surface/80 backdrop-blur-xl border border-border p-6 rounded-xl shadow-2xl">
+            <h2 className="text-xl font-semibold mb-4 text-text-light">Recent Transactions</h2>
+            <ul className="space-y-3 max-h-[400px] overflow-y-auto pr-2">
              {transactions.length > 0 ? (
                transactions.map((t) => (
-                 <li key={t.transaction_id} className="flex justify-between items-center border-b pb-2">
+                 <li key={t.transaction_id} className="flex justify-between items-center border-b border-gray-200 pb-2">
                    <div>
-                     <p className="font-medium">{t.name}</p>
-                     <p className="text-sm text-gray-500">{t.personal_finance_category?.primary || 'Uncategorized'}</p>
+                     <p className="font-medium text-text-primary">{t.name}</p>
+                     <p className="text-sm text-text-secondary">{t.personal_finance_category?.primary || 'Uncategorized'}</p>
                    </div>
-                   <p className={`font-semibold ${t.amount < 0 ? 'text-green-600' : 'text-red-600'}`}>
+                   <p className={`font-semibold ${t.amount < 0 ? 'text-secondary' : 'text-danger'}`}>
                      {t.amount < 0 ? `+$${Math.abs(t.amount).toFixed(2)}` : `-$${t.amount.toFixed(2)}`}
                    </p>
                  </li>
                ))
-             ) : <p>No transactions to display.</p>}
+             ) : <p className="text-text-secondary">No transactions to display.</p>}
            </ul>
-          </div>
+          </motion.div>
+          <motion.div variants={itemVariants} className="bg-surface/80 backdrop-blur-xl border border-border p-6 rounded-xl shadow-2xl">
+            <h2 className="text-xl font-semibold mb-4 text-text-light">Spending by Category</h2>
+            {summary.length > 0 ? (
+              <ResponsiveContainer width="100%" height={300}>
+                <PieChart>
+                  <Pie data={summary} dataKey="value" nameKey="name" cx="50%" cy="45%" outerRadius={90}>
+                    {summary.map((entry, index) => ( <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} /> ))}
+                  </Pie>
+                  <Tooltip contentStyle={{ backgroundColor: '#161B22', border: '1px solid #30363d' }} />
+                  <Legend wrapperStyle={{ color: '#E6EDF3' }} />
+                </PieChart>
+              </ResponsiveContainer>
+            ) : <p className="text-text-muted">No spending data to display.</p>}
+          </motion.div>
         </div>
-      </div>
-    </div>
+      </motion.div>
+    </motion.div>
   );
 };
 
