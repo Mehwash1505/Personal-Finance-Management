@@ -22,11 +22,11 @@ const BudgetForm = ({ onBudgetSet }) => {
   };
 
   return (
-    <form onSubmit={onSubmit} className="space-y-3">
-      <h3 className="text-lg font-semibold">Set a Budget</h3>
+    <form onSubmit={onSubmit} className="space-y-4">
+      <h3 className="text-lg font-semibold text-text-light">Set a Budget</h3>
       <div>
-        <label className="block text-sm font-medium">Category</label>
-        <select value={category} onChange={(e) => setCategory(e.target.value)} className="w-full mt-1 p-2 border border-gray-300 rounded-md">
+        <label className="block text-sm font-medium text-text-muted mb-1">Category</label>
+        <select value={category} onChange={(e) => setCategory(e.target.value)} className="w-full p-2 bg-background border border-border text-text-light rounded-lg focus:ring-primary focus:border-primary">
           <option value="FOOD_AND_DRINK">Food & Drink</option>
           <option value="TRAVEL">Travel</option>
           <option value="TRANSPORTATION">Transportation</option>
@@ -37,10 +37,10 @@ const BudgetForm = ({ onBudgetSet }) => {
         </select>
       </div>
       <div>
-        <label className="block text-sm font-medium">Limit ($)</label>
-        <input type="number" value={limit} onChange={(e) => setLimit(e.target.value)} placeholder="e.g., 500" className="w-full mt-1 p-2 border border-gray-300 rounded-md" required />
+        <label className="block text-sm font-medium text-text-muted mb-1">Limit ($)</label>
+        <input type="number" value={limit} onChange={(e) => setLimit(e.target.value)} placeholder="e.g., 500" className="w-full p-2 bg-background border border-border text-text-light rounded-lg focus:ring-primary focus:border-primary" required />
       </div>
-      <button type="submit" className="w-full py-2 bg-green-500 text-white font-semibold rounded-md hover:bg-green-600">Set Budget</button>
+      <button type="submit" className="w-full py-2 bg-secondary text-white font-semibold rounded-lg hover:bg-opacity-90 transition-colors shadow-lg shadow-green-500/20">Set Budget</button>
     </form>
   );
 };
