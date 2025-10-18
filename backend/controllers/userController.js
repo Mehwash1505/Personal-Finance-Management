@@ -72,6 +72,30 @@ const loginUser = async (req, res) => {
   }
 };
 
+
+// @desc    Update user profile (name)
+// @route   PUT /api/users/profile
+// @access  Private
+const updateUserProfile = async (req, res) => {
+  const user = await User.findById(req.user.id);
+
+  if (user) {
+    user.name = req.body.name || user.name;
+    const updatedUser = await user.save();
+    
+    // Send back the updated user data (excluding password)
+    res.status(200).json({
+      _id: updatedUser._id,
+      name: updatedUser.name,
+      email: updatedUser.email,
+      token: req.headers.authorization.split(' ')[1], // Resend the original token
+    });
+  } else {
+    res.status(404).json({ message: 'User not found' });
+  }
+};
+
+
 // We can keep the test endpoint for now
 const testUserEndpoint = (req, res) => {
     res.json({ message: 'User routes are working' });
@@ -81,5 +105,6 @@ const testUserEndpoint = (req, res) => {
 module.exports = {
   registerUser,
   loginUser,
-  testUserEndpoint
+  testUserEndpoint,
+  updateUserProfile,
 };
