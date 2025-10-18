@@ -179,6 +179,47 @@ const getMonthlySummary = async (req, res) => {
   }
 };
 
+// @desc    Get user's net worth
+// @route   GET /api/plaid/net-worth
+// @access  Private
+const getNetWorth = async (req, res) => {
+  try {
+    const user = await User.findById(req.user.id);
+    if (!user || !user.plaidAccessToken) {
+      return res.status(400).json({ message: 'Plaid access token not found.' });
+    }
+
+    const request = { access_token: user.plaidAccessToken };
+    const response = await plaidClient.accountsGet(request);
+    const accounts = response.data.accounts;
+
+    let assets = 0;
+    let liabilities = 0;
+
+    accounts.forEach(account => {
+      const type = account.type;
+      const balance = account.balances.current;
+
+      if (type === 'depository' || type === 'investment' || type === 'brokerage') {
+        assets += balance;
+      } else if (type === 'credit' || type === 'loan') {
+        liabilities += balance;
+      }
+    });
+
+    const netWorth = assets - liabilities;
+
+    res.json({
+      assets: parseFloat(assets.toFixed(2)),
+      liabilities: parseFloat(liabilities.toFixed(2)),
+      netWorth: parseFloat(netWorth.toFixed(2)),
+    });
+
+  } catch (error) {
+    console.error('Error fetching net worth:', error);
+    res.status(500).json({ message: 'Failed to fetch net worth.' });
+  }
+};
 
 module.exports = {
   createLinkToken,
@@ -187,4 +228,5 @@ module.exports = {
   getAccounts,
   getDataSummary,
   getMonthlySummary, //Add this to your exports
+  getNetWorth,
 };
