@@ -121,6 +121,7 @@ import BudgetStatus from '../components/BudgetStatus';
 import MonthlySummaryChart from '../components/MonthlySummaryChart';
 import Spinner from '../components/Spinner';
 import ManualTransactionForm from '../components/ManualTransactionForm';
+import NetWorth from '../components/NetWorth';
 
 const DashboardPage = () => {
   const [transactions, setTransactions] = useState([]);
@@ -236,6 +237,9 @@ const DashboardPage = () => {
         animate="visible"
       >
         <div className="lg:col-span-1 space-y-6">
+          <motion.div variants={itemVariants} className="bg-surface/80 backdrop-blur-xl border border-border p-6 rounded-xl shadow-2xl">
+            <NetWorth />
+          </motion.div>
           <motion.div variants={itemVariants} className="bg-surface/80 backdrop-blur-xl border border-border p-6 rounded-xl shadow-2xl">
             <ManualTransactionForm onTransactionAdded={fetchData} />
           </motion.div>
