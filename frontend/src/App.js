@@ -7,6 +7,8 @@ import RegisterPage from './pages/RegisterPage';
 import DashboardPage from './pages/DashboardPage';
 import ProtectedRoute from './components/ProtectedRoute';
 import PublicRoute from './components/PublicRoute'; // <-- 1. Import PublicRoute
+import GoalsPage from './pages/GoalsPage';
+import ProfilePage from './pages/ProfilePage';
 
 function App() {
   return (
@@ -24,6 +26,11 @@ function App() {
           {/* --- Protected Route --- */}
           <Route path="/dashboard" element={<ProtectedRoute />}>
             <Route index element={<DashboardPage />} />
+            <Route path='goals' element= {<GoalsPage />}/>
+          </Route>
+
+          <Route path="/profile" element={<ProtectedRoute />}>
+            <Route index element={<ProfilePage />} />
           </Route>
         </Routes>
       </main>
