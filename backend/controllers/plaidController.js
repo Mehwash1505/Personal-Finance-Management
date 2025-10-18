@@ -23,7 +23,7 @@ const createLinkToken = async (req, res) => {
         client_user_id: req.user.id,
       },
       client_name: 'PFM Dashboard',
-      products: [Products.Transactions],
+      products: [Products.Transactions, Products.Investments],
       country_codes: [CountryCode.Us],
       language: 'en',
     };
@@ -221,6 +221,25 @@ const getNetWorth = async (req, res) => {
   }
 };
 
+// @desc    Get investment holdings for a user
+// @route   GET /api/plaid/investments
+// @access  Private
+const getInvestments = async (req, res) => {
+  try {
+    const user = await User.findById(req.user.id);
+    if (!user || !user.plaidAccessToken) {
+      return res.status(400).json({ message: 'Plaid access token not found.' });
+    }
+
+    const request = { access_token: user.plaidAccessToken };
+    const response = await plaidClient.investmentsHoldingsGet(request);
+    res.json(response.data);
+  } catch (error) {
+    console.error('Error fetching investments:', error);
+    res.status(500).json({ message: 'Failed to fetch investments.' });
+  }
+};
+
 module.exports = {
   createLinkToken,
   exchangePublicToken,
@@ -229,4 +248,5 @@ module.exports = {
   getDataSummary,
   getMonthlySummary, //Add this to your exports
   getNetWorth,
+  getInvestments,
 };
