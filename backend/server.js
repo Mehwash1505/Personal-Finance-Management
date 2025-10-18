@@ -4,6 +4,7 @@ const cors = require('cors');
 const path = require('path'); // It's good practice to keep this
 const connectDB = require('./db.js');
 const transactionRoutes = require('./routes/transactionRoutes');
+const goalRoutes = require('./routes/goalRoutes');
 
 // Load environment variables FIRST
 dotenv.config({ path: path.resolve(__dirname, '../.env') });
@@ -28,6 +29,7 @@ app.use('/api/users', userRoutes);
 app.use('/api/plaid', plaidRoutes);
 app.use('/api/budgets', budgetRoutes);
 app.use('/api/transactions', transactionRoutes);
+app.use('/api/goals', goalRoutes);
 
 // Define the port
 const PORT = process.env.PORT || 5000;
