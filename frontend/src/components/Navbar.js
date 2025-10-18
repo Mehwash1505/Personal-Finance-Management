@@ -20,9 +20,9 @@ const Navbar = () => {
         <ul className="flex items-center space-x-6">
           {user ? (
             <>
-              {/* <li>
+              <li>
                 <span className="text-text-muted">Welcome, <span className="font-semibold text-text-light">{user.name}</span></span>
-              </li> */}
+              </li>
 
               <li>
                 <Link to="/dashboard" className="text-text-muted hover:text-primary font-medium transition-colors">Dashboard</Link>
@@ -30,8 +30,12 @@ const Navbar = () => {
               <li>
                 <Link to="/dashboard/goals" className="text-text-muted hover:text-primary font-medium transition-colors">Goals</Link>
               </li>
+              <li>
+                <Link to="/investments" className="text-text-muted hover:text-primary font-medium transition-colors">Investments</Link>
+              </li>
               <Link to="/profile" className="text-text-muted hover:text-primary font-medium transition-colors">
-                Welcome, <span className="font-semibold text-text-light">{user.name}</span>
+                {/* Welcome, <span className="font-semibold text-text-light">{user.name}</span> */}
+                Update Profile
               </Link>
               <li>
                 <button onClick={onLogout} className="bg-danger hover:bg-opacity-90 text-white font-bold py-2 px-4 rounded-lg transition-colors">
