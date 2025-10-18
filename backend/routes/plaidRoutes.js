@@ -8,6 +8,7 @@ const {
   getDataSummary,
   getMonthlySummary, // Importing  new function
   getNetWorth,
+  getInvestments,
 } = require('../controllers/plaidController');
 const { protect } = require('../middlewares/authMiddleware');
 
@@ -18,5 +19,5 @@ router.get('/accounts', protect, getAccounts);
 router.get('/summary', protect, getDataSummary); //Adding new route
 router.get('/monthly-summary', protect, getMonthlySummary);
 router.get('/net-worth', protect, getNetWorth);
-
+router.get('/investments', protect, getInvestments);
 module.exports = router;
