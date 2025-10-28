@@ -7,7 +7,13 @@ const transactionRoutes = require('./routes/transactionRoutes');
 const goalRoutes = require('./routes/goalRoutes');
 
 // Load environment variables FIRST
-dotenv.config({ path: path.resolve(__dirname, '../.env') });
+// For local development, try to load .env file
+// For production (Render), environment variables are already set
+if (process.env.NODE_ENV !== 'production') {
+  dotenv.config({ path: path.resolve(__dirname, '../.env') });
+} else {
+  dotenv.config(); // This loads from environment variables
+}
 
 // Require your routes AFTER loading the .env file
 const userRoutes = require('./routes/userRoutes');
@@ -49,6 +55,22 @@ app.use('/api/budgets', budgetRoutes);
 app.use('/api/transactions', transactionRoutes);
 app.use('/api/goals', goalRoutes);
 
+// Root endpoint
+app.get('/', (req, res) => {
+  res.status(200).json({ 
+    status: 'OK', 
+    message: 'PFM Backend API is running',
+    endpoints: {
+      health: '/health',
+      users: '/api/users',
+      plaid: '/api/plaid',
+      budgets: '/api/budgets',
+      transactions: '/api/transactions',
+      goals: '/api/goals'
+    }
+  });
+});
+
 // Health check endpoint
 app.get('/health', (req, res) => {
   res.status(200).json({ status: 'OK', message: 'Server is running' });
@@ -57,8 +79,8 @@ app.get('/health', (req, res) => {
 // Define the port
 const PORT = process.env.PORT || 5000;
 
-// Start the server
-const server = app.listen(PORT, () => {
+// Start the server - IMPORTANT: Bind to 0.0.0.0 for Render
+const server = app.listen(PORT, '0.0.0.0', () => {
   console.log(`Server is running on port ${PORT}`);
 });
 
