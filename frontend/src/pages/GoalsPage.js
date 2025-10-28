@@ -3,6 +3,7 @@ import axios from 'axios';
 import { motion } from 'framer-motion';
 import AuthContext from '../context/AuthContext';
 import Spinner from '../components/Spinner';
+import API_BASE_URL from '../config/api';
 
 const GoalItem = ({ goal, onUpdate }) => {
   const progress = Math.min((goal.currentAmount / goal.targetAmount) * 100, 100);
@@ -56,7 +57,7 @@ const GoalsPage = () => {
     if (!user) return;
     const config = { headers: { Authorization: `Bearer ${user.token}` } };
     try {
-      const res = await axios.get('http://localhost:5001/api/goals', config);
+      const res = await axios.get('${API_BASE_URL}/api/goals', config);
       setGoals(res.data);
     } catch (error) {
       console.error("Failed to fetch goals", error);
@@ -69,7 +70,7 @@ const GoalsPage = () => {
     e.preventDefault();
     const config = { headers: { Authorization: `Bearer ${user.token}` } };
     try {
-      await axios.post('http://localhost:5001/api/goals', formData, config);
+      await axios.post('${API_BASE_URL}/api/goals', formData, config);
       fetchGoals();
       setFormData({ name: '', targetAmount: '', deadline: '' });
     } catch (error) {
@@ -80,7 +81,7 @@ const GoalsPage = () => {
   const updateGoal = async (id, updatedData) => {
     const config = { headers: { Authorization: `Bearer ${user.token}` } };
     try {
-      await axios.put(`http://localhost:5001/api/goals/${id}`, updatedData, config);
+      await axios.put(`${API_BASE_URL}/api/goals/${id}`, updatedData, config);
       fetchGoals();
     } catch (error) {
       console.error("Failed to update goal", error);
