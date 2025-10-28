@@ -4,6 +4,7 @@ import axios from 'axios';
 import { motion } from 'framer-motion';
 import Message from '../components/Message';
 import AuthContext from '../context/AuthContext';
+import API_BASE_URL from '../config/api';
 
 const RegisterPage = () => {
   const [formData, setFormData] = useState({ name: '', email: '', password: '' });
@@ -18,7 +19,7 @@ const RegisterPage = () => {
     e.preventDefault();
     setError('');
     try {
-      const response = await axios.post('http://localhost:5001/api/users/register', { name, email, password });
+      const response = await axios.post(`${API_BASE_URL}/api/users/register`, { name, email, password });
       if (response.data) {
         login(response.data);
         navigate('/dashboard');
