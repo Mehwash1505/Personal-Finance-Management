@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+import API_BASE_URL from '../config/api';
 
 const BudgetForm = ({ onBudgetSet }) => {
   const [category, setCategory] = useState('FOOD_AND_DRINK');
@@ -13,7 +14,7 @@ const BudgetForm = ({ onBudgetSet }) => {
       },
     };
     try {
-      await axios.post('http://localhost:5001/api/budgets', { category, limit }, config);
+      await axios.post(`${API_BASE_URL}/api/budgets`, { category, limit }, config);
       onBudgetSet(); // Notify parent to refetch data
       setLimit('');
     } catch (error) {
