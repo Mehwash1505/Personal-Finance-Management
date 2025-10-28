@@ -3,6 +3,7 @@ import axios from 'axios';
 import { motion } from 'framer-motion';
 import AuthContext from '../context/AuthContext';
 import Spinner from '../components/Spinner';
+import API_BASE_URL from '../config/api';
 
 const InvestmentsPage = () => {
   const [data, setData] = useState(null);
@@ -14,7 +15,7 @@ const InvestmentsPage = () => {
       if (!user) return;
       const config = { headers: { Authorization: `Bearer ${user.token}` } };
       try {
-        const res = await axios.get('http://localhost:5001/api/plaid/investments', config);
+        const res = await axios.get(`${API_BASE_URL}/api/plaid/investments`, config);
         setData(res.data);
       } catch (error) {
         console.error("Failed to fetch investments", error);
