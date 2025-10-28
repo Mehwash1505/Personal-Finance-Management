@@ -5,6 +5,8 @@ const path = require('path'); // It's good practice to keep this
 const connectDB = require('./db.js');
 const transactionRoutes = require('./routes/transactionRoutes');
 const goalRoutes = require('./routes/goalRoutes');
+const billRoutes = require('./routes/billRoutes');
+const cors = require('cors');
 
 // Load environment variables FIRST
 dotenv.config({ path: path.resolve(__dirname, '../.env') });
@@ -30,7 +32,7 @@ app.use('/api/plaid', plaidRoutes);
 app.use('/api/budgets', budgetRoutes);
 app.use('/api/transactions', transactionRoutes);
 app.use('/api/goals', goalRoutes);
-
+app.use('/api/bills', billRoutes);
 // Define the port
 const PORT = process.env.PORT || 5000;
 
@@ -38,5 +40,10 @@ const PORT = process.env.PORT || 5000;
 const server = app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
+
+app.use(cors({
+  origin: ['https://veritas-main-personal-finance-management.onrender.com', 'http://localhost:3000'],
+  credentials: true
+}));
 
 module.exports = { app, server };
