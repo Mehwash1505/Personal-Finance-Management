@@ -1,6 +1,7 @@
 // File: src/components/ManualTransactionForm.js
 import React, { useState } from 'react';
 import axios from 'axios';
+import API_BASE_URL from '../config/api';
 
 const ManualTransactionForm = ({ onTransactionAdded }) => {
   const [name, setName] = useState('');
@@ -16,7 +17,7 @@ const ManualTransactionForm = ({ onTransactionAdded }) => {
       },
     };
     try {
-      await axios.post('/api/transactions', { name, amount, category, type }, config);
+      await axios.post(`${API_BASE_URL}/api/transactions`, { name, amount, category, type }, config);
       onTransactionAdded(); // Notify dashboard to refetch data
       setName('');
       setAmount('');
