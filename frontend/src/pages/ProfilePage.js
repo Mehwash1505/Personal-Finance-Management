@@ -3,6 +3,7 @@ import axios from 'axios';
 import { motion } from 'framer-motion';
 import AuthContext from '../context/AuthContext';
 import toast from 'react-hot-toast'; // For success notifications
+import API_BASE_URL from '../config/api';
 
 const ProfilePage = () => {
   const { user, login } = useContext(AuthContext);
@@ -18,7 +19,7 @@ const ProfilePage = () => {
     e.preventDefault();
     const config = { headers: { Authorization: `Bearer ${user.token}` } };
     try {
-      const res = await axios.put('http://localhost:5001/api/users/profile', { name }, config);
+      const res = await axios.put(`${API_BASE_URL}/api/users/profile`, { name }, config);
       login(res.data); // Update the global context and localStorage
       toast.success('Profile updated successfully!');
     } catch (error) {
