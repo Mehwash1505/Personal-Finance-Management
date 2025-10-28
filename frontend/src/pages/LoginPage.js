@@ -4,6 +4,7 @@ import axios from 'axios';
 import { motion } from 'framer-motion';
 import Message from '../components/Message';
 import AuthContext from '../context/AuthContext';
+import API_BASE_URL from '../config/api';
 
 const LoginPage = () => {
   const [formData, setFormData] = useState({ email: '', password: '' });
@@ -18,7 +19,7 @@ const LoginPage = () => {
     e.preventDefault();
     setError('');
     try {
-      const response = await axios.post('http://localhost:5001/api/users/login', { email, password });
+      const response = await axios.post(`${API_BASE_URL}/api/users/login`, { email, password });
       if (response.data) {
         login(response.data);
         navigate('/dashboard');
