@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useContext } from 'react';
 import axios from 'axios';
 import AuthContext from '../context/AuthContext';
+import API_BASE_URL from '../config/api';
 
 const NetWorth = () => {
   const [data, setData] = useState(null);
@@ -12,7 +13,7 @@ const NetWorth = () => {
       if (!user) return;
       const config = { headers: { Authorization: `Bearer ${user.token}` } };
       try {
-        const res = await axios.get('http://localhost:5001/api/plaid/net-worth', config);
+        const res = await axios.get(`${API_BASE_URL}/api/plaid/net-worth`, config);
         setData(res.data);
       } catch (error) {
         // Fails gracefully if no Plaid token is found
