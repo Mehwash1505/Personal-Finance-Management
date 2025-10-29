@@ -33,6 +33,12 @@ const Navbar = () => {
               <li>
                 <Link to="/investments" className="text-text-muted hover:text-primary font-medium transition-colors">Investments</Link>
               </li>
+
+              <li>
+                <Link to="/bills" className="text-text-muted hover:text-primary font-medium transition-colors">Bills</Link>
+              </li>
+
+
               <Link to="/profile" className="text-text-muted hover:text-primary font-medium transition-colors">
                 {/* Welcome, <span className="font-semibold text-text-light">{user.name}</span> */}
                 Update Profile
