@@ -5,12 +5,13 @@ const path = require('path');
 const connectDB = require('./db.js');
 const transactionRoutes = require('./routes/transactionRoutes');
 const goalRoutes = require('./routes/goalRoutes');
+const billRoutes = require('./routes/billRoutes');
 
 // Load environment variables FIRST
 if (process.env.NODE_ENV !== 'production') {
-  dotenv.config({ path: path.resolve(__dirname, '../.env') });
+ dotenv.config({ path: path.resolve(__dirname, '../.env') });
 } else {
-  dotenv.config(); // This loads from environment variables
+ dotenv.config(); // This loads from environment variables
 }
 
 // Require your routes AFTER loading the .env file
@@ -58,17 +59,17 @@ app.use(express.json());
 // Root endpoint
 app.get('/', (req, res) => {
 res.status(200).json({ 
-  status: 'OK', 
-  message: 'PFM Backend API is running',
-  endpoints: {
-   health: '/health',
-   users: '/api/users',
-   plaid: '/api/plaid',
-   budgets: '/api/budgets',
-   transactions: '/api/transactions',
-   goals: '/api/goals'
-  }
- });
+ status: 'OK', 
+ message: 'PFM Backend API is running',
+ endpoints: {
+ health: '/health',
+ users: '/api/users',
+ plaid: '/api/plaid',
+ budgets: '/api/budgets',
+ transactions: '/api/transactions',
+ goals: '/api/goals'
+ }
+});
 });
 
 // Health check endpoint
@@ -85,6 +86,7 @@ app.use('/api/plaid', plaidRoutes);
 app.use('/api/budgets', budgetRoutes);
 app.use('/api/transactions', transactionRoutes);
 app.use('/api/goals', goalRoutes);
+app.use('/api/bills', billRoutes);
 
 // Start the server - IMPORTANT: Bind to 0.0.0.0 for Render
 const server = app.listen(PORT, '0.0.0.0', () => {
