@@ -10,6 +10,7 @@ import PublicRoute from './components/PublicRoute'; // <-- 1. Import PublicRoute
 import GoalsPage from './pages/GoalsPage';
 import ProfilePage from './pages/ProfilePage';
 import InvestmentsPage from './pages/InvestmentsPage';
+import BillsPage from './pages/BillsPage';
 
 function App() {
   return (
@@ -29,12 +30,19 @@ function App() {
             <Route index element={<DashboardPage />} />
             <Route path='goals' element= {<GoalsPage />}/>
           </Route>
+
+          <Route path="/bills" element={<ProtectedRoute />}>
+          <Route index element={<BillsPage />} />
+          </Route>
+
           <Route path="/investments" element={<ProtectedRoute />}>
           <Route index element={<InvestmentsPage />} />
           </Route>
+
           <Route path="/profile" element={<ProtectedRoute />}>
             <Route index element={<ProfilePage />} />
           </Route>
+          
         </Routes>
       </main>
     </Router>
