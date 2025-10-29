@@ -7,8 +7,6 @@ const transactionRoutes = require('./routes/transactionRoutes');
 const goalRoutes = require('./routes/goalRoutes');
 
 // Load environment variables FIRST
-// For local development, try to load .env file
-// For production (Render), environment variables are already set
 if (process.env.NODE_ENV !== 'production') {
   dotenv.config({ path: path.resolve(__dirname, '../.env') });
 } else {
@@ -48,13 +46,6 @@ app.use(cors({
 // Middleware
 app.use(express.json());
 
-// --- ROUTES ---
-app.use('/api/users', userRoutes);
-app.use('/api/plaid', plaidRoutes);
-app.use('/api/budgets', budgetRoutes);
-app.use('/api/transactions', transactionRoutes);
-app.use('/api/goals', goalRoutes);
-
 // Root endpoint
 app.get('/', (req, res) => {
   res.status(200).json({ 
@@ -78,6 +69,13 @@ app.get('/health', (req, res) => {
 
 // Define the port
 const PORT = process.env.PORT || 5000;
+
+// --- ROUTES ---
+app.use('/api/users', userRoutes);
+app.use('/api/plaid', plaidRoutes);
+app.use('/api/budgets', budgetRoutes);
+app.use('/api/transactions', transactionRoutes);
+app.use('/api/goals', goalRoutes);
 
 // Start the server - IMPORTANT: Bind to 0.0.0.0 for Render
 const server = app.listen(PORT, '0.0.0.0', () => {
