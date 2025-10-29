@@ -3,6 +3,7 @@ import axios from 'axios';
 import { motion } from 'framer-motion';
 import AuthContext from '../context/AuthContext';
 import Spinner from '../components/Spinner';
+import API_BASE_URL from '../config/api'; // <-- 1. IMPORT karo API_BASE_URL
 
 const BillsPage = () => {
   const [bills, setBills] = useState([]);
@@ -14,10 +15,11 @@ const BillsPage = () => {
     if (!user) return;
     const config = { headers: { Authorization: `Bearer ${user.token}` } };
     try {
-      const res = await axios.get('http://localhost:5001/api/bills', config);
+      // 2. Use API_BASE_URL here
+      const res = await axios.get(`${API_BASE_URL}/api/bills`, config);
       setBills(res.data);
     } catch (error) {
-      console.error("Failed to fetch bills");
+      console.error("Failed to fetch bills", error); // Keep error log for now
     } finally {
       setIsLoading(false);
     }
@@ -27,11 +29,12 @@ const BillsPage = () => {
     e.preventDefault();
     const config = { headers: { Authorization: `Bearer ${user.token}` } };
     try {
-      await axios.post('http://localhost:5001/api/bills', formData, config);
+      // 3. Use API_BASE_URL here
+      await axios.post(`${API_BASE_URL}/api/bills`, formData, config);
       fetchBills();
       setFormData({ name: '', amount: '', dueDate: '' });
     } catch (error) {
-      console.error("Failed to add bill");
+      console.error("Failed to add bill", error); // Keep error log for now
     }
   };
 
@@ -44,7 +47,7 @@ const BillsPage = () => {
   return (
     <motion.div className="container mx-auto p-4" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
       <h1 className="text-4xl font-bold text-text-light my-6">Bills & Subscriptions</h1>
-
+      
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <div className="md:col-span-1">
           <div className="bg-surface/80 backdrop-blur-xl border border-border p-6 rounded-xl shadow-2xl">
@@ -66,7 +69,7 @@ const BillsPage = () => {
             </form>
           </div>
         </div>
-
+        
         <div className="md:col-span-2">
           <div className="bg-surface/80 backdrop-blur-xl border border-border p-6 rounded-xl shadow-2xl">
             <h3 className="text-lg font-semibold text-text-light mb-4">Upcoming Payments</h3>
