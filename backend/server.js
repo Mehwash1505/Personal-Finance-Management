@@ -23,37 +23,34 @@ connectDB();
 
 const app = express();
 
-// --- START OF UPDATED CORS SECTION ---
+// --- START OF CORS SECTION ---
 
 // Define your allowed origins
 const allowedOrigins = [
-  'https://veritas-main-personal-finance-management.onrender.com',
-  'http://localhost:3000', // For local development
+ 'https://veritas-main-personal-finance-management.onrender.com',
+ 'http://localhost:3000', // For local development
 ];
 
 // Create reusable CORS options
 const corsOptions = {
-  origin: function(origin, callback) {
-    // Allow requests with no origin (like mobile apps or curl requests)
-    if (!origin) return callback(null, true);
-    
-    if (allowedOrigins.indexOf(origin) === -1) {
-      const msg = 'The CORS policy for this site does not allow access from the specified Origin.';
-      return callback(new Error(msg), false);
-    }
-    return callback(null, true);
-  },
-  credentials: true
+ origin: function(origin, callback) {
+  // Allow requests with no origin (like mobile apps or curl requests)
+  if (!origin) return callback(null, true);
+  
+  if (allowedOrigins.indexOf(origin) === -1) {
+   const msg = 'The CORS policy for this site does not allow access from the specified Origin.';
+   return callback(new Error(msg), false);
+  }
+  return callback(null, true);
+ },
+ credentials: true
 };
 
-// 1. Handle preflight requests (OPTIONS) for all routes
-// This explicitly answers the "preflight request" from your error.
-app.options('*', cors(corsOptions)); 
-
-// 2. Use CORS for all other requests
+// Use CORS for all requests. 
+// This one line handles all requests, including preflight OPTIONS.
 app.use(cors(corsOptions));
 
-// --- END OF UPDATED CORS SECTION ---
+// --- END OF CORS SECTION ---
 
 // Middleware
 app.use(express.json());
@@ -61,17 +58,17 @@ app.use(express.json());
 // Root endpoint
 app.get('/', (req, res) => {
 res.status(200).json({ 
-  status: 'OK', 
-  message: 'PFM Backend API is running',
-  endpoints: {
-   health: '/health',
-   users: '/api/users',
-   plaid: '/api/plaid',
-   budgets: '/api/budgets',
-   transactions: '/api/transactions',
-   goals: '/api/goals'
-  }
- });
+  status: 'OK', 
+  message: 'PFM Backend API is running',
+  endpoints: {
+   health: '/health',
+   users: '/api/users',
+   plaid: '/api/plaid',
+   budgets: '/api/budgets',
+   transactions: '/api/transactions',
+   goals: '/api/goals'
+  }
+ });
 });
 
 // Health check endpoint
