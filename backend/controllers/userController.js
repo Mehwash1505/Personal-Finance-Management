@@ -112,7 +112,7 @@ const changePassword = async (req, res) => {
 
   res.status(200).json({ message: 'Password changed successfully' });
 };
-// --- END OF NAYA FUNCTION ---
+// --- END OF NEW FUNCTION ---
 
 
 module.exports = {
