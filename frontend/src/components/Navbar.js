@@ -12,7 +12,7 @@ const Navbar = () => {
   };
 
   return (
-    <header className="bg-surface-dark border-b border-border-dark sticky top-0 z-10">
+    <header className="bg-surface-dark bg-blue-600 border-b border-border-dark sticky top-0 z-10">
       <nav className="container mx-auto flex justify-between items-center p-4">
         <Link to={user ? "/dashboard" : "/"} className="text-2xl font-bold text-primary">
           Veritas
