@@ -12,6 +12,7 @@ import NetWorth from '../components/NetWorth';
 import { useContext } from 'react'; 
 import AuthContext from '../context/AuthContext';
 import API_BASE_URL from '../config/api';
+import toast from 'react-hot-toast';
 
 const DashboardPage = () => {
   const [transactions, setTransactions] = useState([]);
@@ -96,6 +97,44 @@ const DashboardPage = () => {
       exchangeToken();
     },
   });
+  
+  const handleDownload = async () => {
+    // 1. Loading toast dikhao
+    const toastId = toast.loading('Preparing your download...');
+
+    const config = {
+      headers: {
+        Authorization: `Bearer ${user.token}`, // Token ko header mein daalo
+      },
+      responseType: 'blob', // Yeh important hai - file download kar rahe hain
+    };
+
+    try {
+      // 2. API call karo
+      const response = await axios.get(`${API_BASE_URL}/api/transactions/export`, config);
+      
+      // 3. File ko browser mein create aur download karo
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', 'manual_transactions.csv'); // File ka naam
+      
+      document.body.appendChild(link);
+      link.click();
+      
+      // 4. Safai karo
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+      
+      toast.dismiss(toastId); // Loading toast hatao
+      toast.success('Download started!');
+      
+    } catch (error) {
+      console.error('Error downloading file:', error);
+      toast.dismiss(toastId);
+      toast.error('Could not download file.');
+    }
+  };
   
   const COLORS = ['#3B82F6', '#10B981', '#F59E0B', '#EF4444', '#8B5CF6'];
 
