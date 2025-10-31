@@ -9,6 +9,8 @@ import MonthlySummaryChart from '../components/MonthlySummaryChart';
 import Spinner from '../components/Spinner';
 import ManualTransactionForm from '../components/ManualTransactionForm';
 import NetWorth from '../components/NetWorth';
+import { useContext } from 'react'; 
+import AuthContext from '../context/AuthContext';
 import API_BASE_URL from '../config/api';
 
 const DashboardPage = () => {
@@ -175,6 +177,20 @@ const DashboardPage = () => {
               </ResponsiveContainer>
             ) : <p className="text-text-muted">No spending data to display.</p>}
           </motion.div>
+
+          <motion.div variants={itemVariants} className="bg-surface/80 backdrop-blur-xl border border-border p-6 rounded-xl shadow-2xl">
+            <h3 className="text-lg font-semibold text-text-light mb-4">Export Data</h3>
+            <a 
+              // Use template literal for the URL and include the token
+              href={`${API_BASE_URL}/api/transactions/export?token=${user?.token}`} 
+              download="manual_transactions.csv" // Suggests filename to browser
+              className="inline-block bg-secondary text-white font-bold py-2 px-4 rounded-lg hover:bg-opacity-90 transition-colors shadow-lg shadow-green-500/20"
+            >
+              Download Manual Transactions (CSV)
+            </a>
+            <p className="text-xs text-text-muted mt-2">(Note: Includes manually added transactions only for now)</p>
+          </motion.div>
+          
         </div>
       </motion.div>
     </motion.div>
