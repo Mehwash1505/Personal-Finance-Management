@@ -1,5 +1,5 @@
 const jwt = require('jsonwebtoken');
-const bcrypt = require('bcryptjs');
+const bcrypt = require('bcryptjs'); // <-- Make sure bcrypt is imported
 const User = require('../models/User.js');
 
 // --- Helper Function to Generate JWT ---
@@ -13,31 +13,22 @@ const generateToken = (id) => {
 // @route   POST /api/users/register
 // @access  Public
 const registerUser = async (req, res) => {
+  // ... (Your existing registerUser code... no changes here)
   const { name, email, password } = req.body;
-
-  // 1. Check if all fields are present
   if (!name || !email || !password) {
     return res.status(400).json({ message: 'Please add all fields' });
   }
-
-  // 2. Check if user already exists
   const userExists = await User.findOne({ email });
   if (userExists) {
     return res.status(400).json({ message: 'User already exists' });
   }
-
-  // 3. Hash the password
   const salt = await bcrypt.genSalt(10);
   const hashedPassword = await bcrypt.hash(password, salt);
-
-  // 4. Create the user in the database
   const user = await User.create({
     name,
     email,
     password: hashedPassword,
   });
-
-  // 5. If user created successfully, send back user data and a token
   if (user) {
     res.status(201).json({
       _id: user.id,
@@ -54,12 +45,9 @@ const registerUser = async (req, res) => {
 // @route   POST /api/users/login
 // @access  Public
 const loginUser = async (req, res) => {
+  // ... (Your existing loginUser code... no changes here)
   const { email, password } = req.body;
-
-  // 1. Find the user by email
   const user = await User.findOne({ email });
-
-  // 2. If user exists, compare the entered password with the hashed password in the DB
   if (user && (await bcrypt.compare(password, user.password))) {
     res.json({
       _id: user.id,
@@ -72,23 +60,20 @@ const loginUser = async (req, res) => {
   }
 };
 
-
 // @desc    Update user profile (name)
 // @route   PUT /api/users/profile
 // @access  Private
 const updateUserProfile = async (req, res) => {
+  // ... (Your existing updateUserProfile code... no changes here)
   const user = await User.findById(req.user.id);
-
   if (user) {
     user.name = req.body.name || user.name;
     const updatedUser = await user.save();
-    
-    // Send back the updated user data (excluding password)
     res.status(200).json({
       _id: updatedUser._id,
       name: updatedUser.name,
       email: updatedUser.email,
-      token: req.headers.authorization.split(' ')[1], // Resend the original token
+      token: req.headers.authorization.split(' ')[1],
     });
   } else {
     res.status(404).json({ message: 'User not found' });
@@ -96,15 +81,43 @@ const updateUserProfile = async (req, res) => {
 };
 
 
-// We can keep the test endpoint for now
-const testUserEndpoint = (req, res) => {
-    res.json({ message: 'User routes are working' });
+// --- YEH NAYA FUNCTION HAI ---
+// @desc    Change user password
+// @route   PUT /api/users/profile/change-password
+// @access  Private
+const changePassword = async (req, res) => {
+  const { oldPassword, newPassword, confirmPassword } = req.body;
+
+  // 1. Check if new passwords match
+  if (newPassword !== confirmPassword) {
+    return res.status(400).json({ message: 'New passwords do not match' });
+  }
+
+  // 2. Get user from DB
+  const user = await User.findById(req.user.id);
+  if (!user) {
+    return res.status(404).json({ message: 'User not found' });
+  }
+
+  // 3. Compare old password
+  const isMatch = await bcrypt.compare(oldPassword, user.password);
+  if (!isMatch) {
+    return res.status(400).json({ message: 'Incorrect old password' });
+  }
+
+  // 4. Hash and save new password
+  const salt = await bcrypt.genSalt(10);
+  user.password = await bcrypt.hash(newPassword, salt);
+  await user.save();
+
+  res.status(200).json({ message: 'Password changed successfully' });
 };
+// --- END OF NAYA FUNCTION ---
 
 
 module.exports = {
   registerUser,
   loginUser,
-  testUserEndpoint,
   updateUserProfile,
+  changePassword, // <-- Naya function yahan add karo
 };
