@@ -207,11 +207,27 @@ const DashboardPage = () => {
             {summary.length > 0 ? (
               <ResponsiveContainer width="100%" height={300}>
                 <PieChart>
-                  <Pie data={summary} dataKey="value" nameKey="name" cx="50%" cy="45%" outerRadius={90}>
-                    {summary.map((entry, index) => ( <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} /> ))}
+                  <Pie
+                   data={summary} 
+                   dataKey="value" 
+                   nameKey="name" 
+                   cx="50%" 
+                   cy="45%" 
+                   outerRadius={90}
+                   innerRadius={60}
+                   paddingAngle={2}
+                  >
+                    {summary.map((entry, index) => ( 
+                      <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} /> 
+                    ))}
                   </Pie>
                   <Tooltip contentStyle={{ backgroundColor: '#161B22', border: '1px solid #30363d' }} />
-                  <Legend wrapperStyle={{ color: '#E6EDF3' }} />
+                  <Legend
+                   layout="vertical"
+                   align='right'
+                   verticalAlign='middle'
+                   iconType='square'                  
+                   wrapperStyle={{ color: '#E6EDF3', paddingLeft: '20px' }} />
                 </PieChart>
               </ResponsiveContainer>
             ) : <p className="text-text-muted">No spending data to display.</p>}
