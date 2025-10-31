@@ -20,7 +20,7 @@ const DashboardPage = () => {
   const [monthlySummary, setMonthlySummary] = useState([]);
   const [linkToken, setLinkToken] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
-  
+  const { user } = useContext(AuthContext);
 
   // data fetching functions: getAuthConfig, fetchData, useEffect, usePlaidLink
   const getAuthConfig = useCallback(() => {
