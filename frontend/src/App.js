@@ -11,11 +11,13 @@ import GoalsPage from './pages/GoalsPage';
 import ProfilePage from './pages/ProfilePage';
 import InvestmentsPage from './pages/InvestmentsPage';
 import BillsPage from './pages/BillsPage';
+import { Toaster } from 'react-hot-toast';
 
 function App() {
   return (
     <Router>
       <Navbar />
+      <Toaster position="top-center" reverseOrder={false} />
       <main className="container mx-auto p-4">
         <Routes>
           {/* --- 2. Wrap Public Routes --- */}
