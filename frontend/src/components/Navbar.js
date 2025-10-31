@@ -15,7 +15,7 @@ const Navbar = () => {
     <header className="bg-surface-dark border-b border-border-dark sticky top-0 z-10">
       <nav className="container mx-auto flex justify-between items-center p-4">
         <Link to={user ? "/dashboard" : "/"} className="text-2xl font-bold text-primary">
-          PFM
+          Veritas
         </Link>
         <ul className="flex items-center space-x-6">
           {user ? (
