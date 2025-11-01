@@ -30,6 +30,11 @@ const userSchema = mongoose.Schema(
         limit: { type: Number, required: true },
       },
     ],
+
+    notificationPreferences: {
+      sendBillAlerts: { type: Boolean, default: true },
+      sendBudgetAlerts: { type: Boolean, default: true },
+    },
   },
   {
     timestamps: true, // Automatically creates createdAt and updatedAt fields
