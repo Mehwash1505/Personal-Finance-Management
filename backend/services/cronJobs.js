@@ -1,7 +1,7 @@
 const cron = require('node-cron');
 const { runChecks } = require('./notificationService');
 
-// Yeh cron job har din subah 9 baje chalega
+// works at 9 in the morning (every day)
 // ('0 9 * * *' = 0th minute, 9th hour, every day, every month, every day of week)
 const startCronJobs = () => {
   cron.schedule('0 9 * * *', () => {
