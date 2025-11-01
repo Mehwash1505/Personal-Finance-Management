@@ -14,14 +14,14 @@ const itemVariants = {
 
 const HomePage = () => {
   return (
-    <div className="flex items-center justify-center min-h-[80vh]">
+    <div className="flex items-center justify-center min-h-[80vh] px-4">
       <motion.div
         className="w-full max-w-4xl p-10 text-center"
         variants={containerVariants}
         initial="hidden"
         animate="visible"
       >
-        <motion.h1 variants={itemVariants} className="text-6xl font-extrabold text-text-light mb-4 tracking-light">
+        <motion.h1 variants={itemVariants} className="text-4xl md:text-6xl font-extrabold text-text-light mb-4 tracking-light">
           Take Control of Your Finances
         </motion.h1>
         <motion.p variants={itemVariants} className="text-lg text-text-muted max-w-2xl mx-auto mb-8">
