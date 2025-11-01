@@ -12,6 +12,7 @@ import ProfilePage from './pages/ProfilePage';
 import InvestmentsPage from './pages/InvestmentsPage';
 import BillsPage from './pages/BillsPage';
 import { Toaster } from 'react-hot-toast';
+import Verify2FAPage from './pages/Verify2FAPage';
 
 function App() {
   return (
@@ -26,6 +27,8 @@ function App() {
             <Route path="/login" element={<LoginPage />} />
             <Route path="/register" element={<RegisterPage />} />
           </Route>
+
+          <Route path="/verify-2fa" element={<Verify2FAPage />} />
 
           {/* --- Protected Route --- */}
           <Route path="/dashboard" element={<ProtectedRoute />}>
