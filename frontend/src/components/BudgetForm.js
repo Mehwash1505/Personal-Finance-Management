@@ -27,7 +27,7 @@ const BudgetForm = ({ onBudgetSet }) => {
       <h3 className="text-lg font-semibold text-text-light">Set a Budget</h3>
       <div>
         <label className="block text-sm font-medium text-text-muted mb-1">Category</label>
-        <select value={category} onChange={(e) => setCategory(e.target.value)} className="w-full p-2 bg-background border border-border text-text-light rounded-lg focus:ring-primary focus:border-primary">
+        <select value={category} onChange={(e) => setCategory(e.target.value)} className="w-full p-2 bg-background border border-border text-text-primary rounded-lg focus:ring-primary focus:border-primary">
           <option value="FOOD_AND_DRINK">Food & Drink</option>
           <option value="TRAVEL">Travel</option>
           <option value="TRANSPORTATION">Transportation</option>
