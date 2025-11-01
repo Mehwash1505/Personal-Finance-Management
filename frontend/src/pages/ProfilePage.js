@@ -14,6 +14,12 @@ const ProfilePage = () => {
   const [isProfileSubmitting, setIsProfileSubmitting] = useState(false);
   const [profileError, setProfileError] = useState('');
 
+  // NEW STATE: Notification Preferences
+  const [preferences, setPreferences] = useState({
+    sendBillAlerts: true,
+    sendBudgetAlerts: true,
+  });
+
   // Password Form state
   const [passwordData, setPasswordData] = useState({ oldPassword: '', newPassword: '', confirmPassword: '' });
   const [isPasswordSubmitting, setIsPasswordSubmitting] = useState(false);
@@ -23,6 +29,10 @@ const ProfilePage = () => {
   useEffect(() => {
     if (user) {
       setName(user.name);
+
+      if(user.notificationPreferences){
+        setPreferences(user.notificationPreferences);
+      }
     }
   }, [user]);
 
