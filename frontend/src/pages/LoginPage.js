@@ -24,11 +24,15 @@ const LoginPage = () => {
     setIsSubmitting(true); // <-- This will show the Loader
     try {
       const response = await axios.post(`${API_BASE_URL}/api/users/login`, { email, password });
-      if (response.data) {
+      
+      if (response.data.requires2FA) {
+        // 2FA ki zaroorat hai, naye page par bhejo
+        navigate('/verify-2fa', { state: { tempToken: response.data.tempToken } });
+      } else {
+        // Normal login
         login(response.data);
         toast.success('Logged in Successfully!');
         navigate('/dashboard');
-        // No need to set isSubmitting(false) because we are navigating away
       }
     } catch (err) {
       const message = err.response?.data?.message || 'Something went wrong';
