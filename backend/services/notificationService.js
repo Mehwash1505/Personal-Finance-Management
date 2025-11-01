@@ -5,7 +5,16 @@ const { sendEmail } = require('../config/mailer');
 const { Configuration, PlaidApi, PlaidEnvironments } = require('plaid');
 
 // Plaid client ko yahan bhi initialize karna padega
-const configuration = new Configuration({ /* ... (Plaid config object) ... */ });
+const configuration = new Configuration({
+  basePath: PlaidEnvironments[process.env.PLAID_ENV], // e.g., 'sandbox'
+  baseOptions: {
+    headers: {
+      'PLAID-CLIENT-ID': process.env.PLAID_CLIENT_ID,
+      'PLAID-SECRET': process.env.PLAID_SECRET,
+    },
+  },
+});
+
 const plaidClient = new PlaidApi(configuration);
 
 
@@ -82,13 +91,18 @@ const runChecks = async () => {
   const users = await User.find({});
 
   for (const user of users) {
-    if (user.notificationPreferences.sendBillAlerts) {
-      await checkBillReminders(user);
+    try { // <-- YEH ADD KAREIN
+   if (user.notificationPreferences.sendBillAlerts) {
+    await checkBillReminders(user);
+   }
+   if (user.notificationPreferences.sendBudgetAlerts) {
+    await checkBudgetAlerts(user);
+   }
+    } catch (error) { // <-- YEH ADD KAREIN
+      // Ek user fail hua, koi baat nahin. Agle par jaao.
+      console.error(`Failed to process notifications for user ${user.email}:`, error.message);
     }
-    if (user.notificationPreferences.sendBudgetAlerts) {
-      await checkBudgetAlerts(user);
-    }
-  }
+ }
   console.log('Daily checks complete.');
 };
 

@@ -1,21 +1,22 @@
-const express = require('express');
 const dotenv = require('dotenv');
-const cors = require('cors');
 const path = require('path');
-const connectDB = require('./db.js');
-const transactionRoutes = require('./routes/transactionRoutes');
-const goalRoutes = require('./routes/goalRoutes');
-const billRoutes = require('./routes/billRoutes');
-const { runChecks } = require('./services/notificationService');
 
-// Load environment variables FIRST
+// SABSE PEHLE ENV VARIABLES LOAD HONGE
+// (KISI AUR 'REQUIRE' SE BHI PEHLE)
 if (process.env.NODE_ENV !== 'production') {
  dotenv.config({ path: path.resolve(__dirname, '../.env') });
 } else {
  dotenv.config(); // This loads from environment variables
 }
 
-// Require your routes AFTER loading the .env file
+// AB BAAKI SAB IMPORT KAREIN
+const express = require('express');
+const cors = require('cors');
+const connectDB = require('./db.js');
+const transactionRoutes = require('./routes/transactionRoutes');
+const goalRoutes = require('./routes/goalRoutes');
+const billRoutes = require('./routes/billRoutes');
+const { runChecks } = require('./services/notificationService');
 const userRoutes = require('./routes/userRoutes');
 const plaidRoutes = require('./routes/plaidRoutes');
 const budgetRoutes = require('./routes/budgetRoutes');
@@ -97,6 +98,8 @@ app.get('/api/test-notifications', async (req, res) => {
     await runChecks(); // Chowkidar ko kaam pe lagao
     res.status(200).send('Notification checks triggered successfully! Check your backend console.');
   } catch (error) {
+    console.error('!!!!!!!!!! ERROR IN /api/test-notifications !!!!!!!!!');
+    console.error(error); // <-- YEH HAI ASLI FIX
     res.status(500).send('Error triggering checks.');
   }
 });

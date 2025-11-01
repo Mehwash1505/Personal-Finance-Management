@@ -94,6 +94,13 @@ const ProfilePage = () => {
     }
   };
 
+  const handlePrefChange = (e) => {
+    setPreferences({
+      ...preferences,
+      [e.target.name]: e.target.checked,
+    });
+  };
+
   if (!user) {
     return null; // Ya <Spinner />
   }
@@ -113,6 +120,7 @@ const ProfilePage = () => {
         <form onSubmit={onProfileSubmit} className="space-y-6">
           <h2 className="text-2xl font-bold text-text-light mb-4">Update Details</h2>
           {profileError && <Message>{profileError}</Message>}
+          
           <div>
             <label className="block text-sm font-medium text-text-muted mb-1">Name</label>
             <input
@@ -124,6 +132,7 @@ const ProfilePage = () => {
               disabled={isProfileSubmitting}
             />
           </div>
+
           <div>
             <label className="block text-sm font-medium text-text-muted mb-1">Email</label>
             <input
@@ -133,6 +142,36 @@ const ProfilePage = () => {
               disabled 
             />
           </div>
+          {/* Checkboxes */}
+
+          <div>
+            <label className="block text-sm font-medium text-text-muted mb-2">Notification Preferences</label>
+            <div className="space-y-2">
+              <label className="flex items-center text-text-light">
+                <input
+                  type="checkbox"
+                  name="sendBillAlerts"
+                  checked={preferences.sendBillAlerts}
+                  onChange={handlePrefChange}
+                  className="h-4 w-4 rounded text-primary bg-background border-border focus:ring-primary"
+                  disabled={isProfileSubmitting}
+                />
+                <span className="ml-2">Email me for bill reminders</span>
+              </label>
+              <label className="flex items-center text-text-light">
+                <input
+                  type="checkbox"
+                  name="sendBudgetAlerts"
+                  checked={preferences.sendBudgetAlerts}
+                  onChange={handlePrefChange}
+                  className="h-4 w-4 rounded text-primary bg-background border-border focus:ring-primary"
+                  disabled={isProfileSubmitting}
+                />
+                <span className="ml-2">Email me for budget alerts</span>
+              </label>
+            </div>
+          </div>
+          
           <button
             type="submit"
             className="w-full py-3 bg-primary text-white font-bold rounded-lg hover:bg-primary-hover shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
