@@ -25,6 +25,11 @@ const ProfilePage = () => {
   const [isPasswordSubmitting, setIsPasswordSubmitting] = useState(false);
   const [passwordError, setPasswordError] = useState('');
 
+  const [qrCode, setQrCode] = useState(null);
+  const [twoFactorToken, setTwoFactorToken] = useState('');
+  const [is2FALoading, setIs2FALoading] = useState(false);
+  const [twoFactorError, setTwoFactorError] = useState('');
+
   // Jab user data load ho, toh name field ko populate karo
   useEffect(() => {
     if (user) {
@@ -99,6 +104,54 @@ const ProfilePage = () => {
       ...preferences,
       [e.target.name]: e.target.checked,
     });
+  };
+
+  const handleGenerate2FA = async () => {
+    setIs2FALoading(true);
+    setTwoFactorError('');
+    const config = { headers: { Authorization: `Bearer ${user.token}` } };
+    try {
+      const res = await axios.post(`${API_BASE_URL}/api/users/2fa/generate`, {}, config);
+      setQrCode(res.data.qrCodeUrl); // QR code image data
+    } catch (error) {
+      toast.error('Failed to generate QR code.');
+    } finally {
+      setIs2FALoading(false);
+    }
+  };
+
+  const handleVerify2FA = async () => {
+    setIs2FALoading(true);
+    setTwoFactorError('');
+    const config = { headers: { Authorization: `Bearer ${user.token}` } };
+    try {
+      const res = await axios.post(`${API_BASE_URL}/api/users/2fa/verify`, { token: twoFactorToken }, config);
+      toast.success(res.data.message);
+      setQrCode(null);
+      login(res.data.user); // Context ko updated user data se update karo
+    } catch (error) {
+      const message = error.response?.data?.message || 'Invalid token';
+      setTwoFactorError(message);
+      toast.error(message);
+    } finally {
+      setIs2FALoading(false);
+    }
+  };
+
+  const handleDisable2FA = async () => {
+    if (window.confirm('Are you sure you want to disable 2FA?')) {
+      setIs2FALoading(true);
+      const config = { headers: { Authorization: `Bearer ${user.token}` } };
+      try {
+        const res = await axios.post(`${API_BASE_URL}/api/users/2fa/disable`, {}, config);
+        toast.success(res.data.message);
+        login(res.data.user); // Context ko updated user data se update karo
+      } catch (error) {
+        toast.error('Failed to disable 2FA.');
+      } finally {
+        setIs2FALoading(false);
+      }
+    }
   };
 
   if (!user) {
@@ -232,6 +285,68 @@ const ProfilePage = () => {
             {isPasswordSubmitting ? 'Saving...' : 'Change Password'}
           </button>
         </form>
+
+        <hr classname="my-10 border-border" />
+
+        <div>
+          <h2 className="text-2xl font-bold text-text-light mb-4">Two-Factor Authentication (2FA)</h2>
+          <div className="space-y-4">
+            {user.isTwoFactorEnabled ? (
+              <div>
+                <p className="text-text-muted mb-4">2FA is currently <span className="text-secondary font-bold">ENABLED</span> on your account.</p>
+                <button
+                  onClick={handleDisable2FA}
+                  disabled={is2FALoading}
+                  className="w-full py-3 bg-danger text-white font-bold rounded-lg hover:bg-opacity-90 shadow-lg disabled:opacity-50"
+                >
+                  {is2FALoading ? 'Disabling...' : 'Disable 2FA'}
+                </button>
+              </div>
+            ) : (
+              <div>
+                <p className="text-text-muted mb-4">Scan the QR code with your authenticator app (like Google Authenticator), then enter the 6-digit code to enable 2FA.</p>
+                <button
+                  onClick={handleGenerate2FA}
+                  disabled={is2FALoading || qrCode}
+                  className="w-full py-3 bg-secondary text-white font-bold rounded-lg hover:bg-opacity-90 shadow-lg disabled:opacity-50"
+                >
+                  {is2FALoading ? 'Generating...' : '1. Generate 2FA Secret'}
+                </button>
+
+                {qrCode && (
+                  <motion.div 
+                    className="mt-6 text-center"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                  >
+                    <p className="text-text-muted mb-2">2. Scan this QR Code:</p>
+                    <img src={qrCode} alt="2FA QR Code" className="mx-auto bg-white p-2 rounded-lg" />
+
+                    <div className="mt-4">
+                      {twoFactorError && <Message>{twoFactorError}</Message>}
+                      <label className="block text-sm font-medium text-text-muted mb-1">3. Enter 6-Digit Code</label>
+                      <input
+                        type="text"
+                        value={twoFactorToken}
+                        onChange={(e) => setTwoFactorToken(e.target.value)}
+                        className="w-full p-2 bg-background border border-border text-text-light rounded-lg"
+                        maxLength={6}
+                        disabled={is2FALoading}
+                      />
+                    </div>
+                    <button
+                      onClick={handleVerify2FA}
+                      disabled={is2FALoading || twoFactorToken.length < 6}
+                      className="w-full mt-4 py-3 bg-primary text-white font-bold rounded-lg hover:bg-primary-hover shadow-lg disabled:opacity-50"
+                    >
+                      {is2FALoading ? 'Verifying...' : 'Verify & Enable'}
+                    </button>
+                  </motion.div>
+                )}  
+              </div>
+            )}
+          </div>
+        </div>
       </div>
     </motion.div>
   );
