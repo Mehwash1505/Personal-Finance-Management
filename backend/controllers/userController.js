@@ -66,14 +66,25 @@ const loginUser = async (req, res) => {
 const updateUserProfile = async (req, res) => {
   // ... (Your existing updateUserProfile code... no changes here)
   const user = await User.findById(req.user.id);
+  
   if (user) {
     user.name = req.body.name || user.name;
+
+    if (req.body.preferences) {
+      user.notificationPreferences = {
+        sendBillAlerts: req.body.preferences.sendBillAlerts,
+        sendBudgetAlerts: req.body.preferences.sendBudgetAlerts,
+      };
+    }
+
     const updatedUser = await user.save();
+
     res.status(200).json({
       _id: updatedUser._id,
       name: updatedUser.name,
       email: updatedUser.email,
       token: req.headers.authorization.split(' ')[1],
+      notificationPreferences: updatedUser.notificationPreferences,
     });
   } else {
     res.status(404).json({ message: 'User not found' });
