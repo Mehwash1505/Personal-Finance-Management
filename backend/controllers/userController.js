@@ -130,5 +130,5 @@ module.exports = {
   registerUser,
   loginUser,
   updateUserProfile,
-  changePassword, // <-- Naya function yahan add karo
+  changePassword, // <-- New function added
 };
