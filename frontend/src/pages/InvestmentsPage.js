@@ -34,8 +34,8 @@ const InvestmentsPage = () => {
       <h1 className="text-4xl font-bold text-text-light my-6">Investment Portfolio</h1>
 
       {data && data.holdings.length > 0 ? (
-        <div className="bg-surface/80 backdrop-blur-xl border border-border p-6 rounded-xl shadow-2xl">
-          <table className="w-full text-left">
+        <div className="bg-surface/80 backdrop-blur-xl border border-border rounded-xl shadow-2xl overflow-x-auto">
+          <table className="w-full min-w-[600px] text-left">
             <thead>
               <tr className="border-b border-border">
                 <th className="p-4 text-sm font-semibold text-text-muted">NAME</th>
