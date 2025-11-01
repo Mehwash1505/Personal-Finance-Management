@@ -35,6 +35,16 @@ const userSchema = mongoose.Schema(
       sendBillAlerts: { type: Boolean, default: true },
       sendBudgetAlerts: { type: Boolean, default: true },
     },
+
+    twoFactorSecret: {
+      base32: { type: String },
+      otpauth_url: { type: String },
+    },
+    isTwoFactorEnabled: {
+      type: Boolean,
+      default: false,
+    },
+
   },
   {
     timestamps: true, // Automatically creates createdAt and updatedAt fields
