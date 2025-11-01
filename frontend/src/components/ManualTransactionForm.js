@@ -36,12 +36,12 @@ const ManualTransactionForm = ({ onTransactionAdded }) => {
         <input type="number" value={amount} onChange={(e) => setAmount(e.target.value)} placeholder="Amount" className="w-full p-2 border rounded" required />
       </div>
       <div className="flex space-x-2">
-        <select value={category} onChange={(e) => setCategory(e.target.value)} className="w-1/2 p-2 border rounded">
+        <select value={category} onChange={(e) => setCategory(e.target.value)} className="w-1/2 p-2 bg-background border border-border text-text-primary rounded-lg focus:ring-primary focus:border-primary">
           <option value="FOOD_AND_DRINK">Food & Drink</option>
           <option value="TRAVEL">Travel</option>
           <option value="TRANSPORTATION">Transportation</option>
         </select>
-        <select value={type} onChange={(e) => setType(e.target.value)} className="w-1/2 p-2 border rounded">
+        <select value={type} onChange={(e) => setType(e.target.value)} className="w-1/2 p-2 bg-background border border-border text-text-primary rounded-lg focus:ring-primary focus:border-primary">
           <option value="expense">Expense</option>
           <option value="income">Income</option>
         </select>
