@@ -32,25 +32,31 @@ const app = express();
 // --- START OF CORS SECTION ---
 
 // Define your allowed origins
+// In your server.js, replace the entire CORS section with this:
+
 const allowedOrigins = [
- 'https://veritas-main-personal-finance-management.onrender.com',
- 'http://localhost:3000', // For local development
+  'https://veritas-main-personal-finance-management.onrender.com',
+  'http://localhost:3000',
 ];
 
-// Create reusable CORS options
 const corsOptions = {
- origin: function(origin, callback) {
-  // Allow requests with no origin (like mobile apps or curl requests)
-  if (!origin) return callback(null, true);
-  
-  if (allowedOrigins.indexOf(origin) === -1) {
-   const msg = 'The CORS policy for this site does not allow access from the specified Origin.';
-   return callback(new Error(msg), false);
-  }
-  return callback(null, true);
- },
- credentials: true
+  origin: function(origin, callback) {
+    // Allow requests with no origin (like Postman, mobile apps)
+    if (!origin) return callback(null, true);
+    
+    if (allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      console.log('CORS blocked origin:', origin);
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
 };
+
+app.use(cors(corsOptions));
 
 // Use CORS for all requests. 
 // This one line handles all requests, including preflight OPTIONS.
