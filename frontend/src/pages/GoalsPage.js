@@ -57,7 +57,7 @@ const GoalsPage = () => {
     if (!user) return;
     const config = { headers: { Authorization: `Bearer ${user.token}` } };
     try {
-      const res = await axios.get('${API_BASE_URL}/api/goals', config);
+      const res = await axios.get(`${API_BASE_URL}/api/goals`, config);
       setGoals(res.data);
     } catch (error) {
       console.error("Failed to fetch goals", error);
@@ -70,7 +70,7 @@ const GoalsPage = () => {
     e.preventDefault();
     const config = { headers: { Authorization: `Bearer ${user.token}` } };
     try {
-      await axios.post('${API_BASE_URL}/api/goals', formData, config);
+      await axios.post(`${API_BASE_URL}/api/goals`, formData, config);
       fetchGoals();
       setFormData({ name: '', targetAmount: '', deadline: '' });
     } catch (error) {
