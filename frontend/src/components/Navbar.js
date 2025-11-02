@@ -86,6 +86,9 @@ const Navbar = () => {
                 <li><Link to="/goals" onClick={closeMenu} className="text-2xl text-text-light hover:text-primary">Goals</Link></li>
                 <li><Link to="/investments" onClick={closeMenu} className="text-2xl text-text-light hover:text-primary">Investments</Link></li>
                 <li><Link to="/bills" onClick={closeMenu} className="text-2xl text-text-light hover:text-primary">Bills</Link></li>
+                
+                <li><Link to="/ask-ai" className="text-primary-hover hover:text-primary font-semibold transition-colors">Ask AI</Link></li>
+                
                 <li><Link to="/profile" onClick={closeMenu} className="text-2xl text-text-light hover:text-primary">Profile</Link></li>
                 <li>
                   <button onClick={onLogout} className="bg-danger hover:bg-opacity-90 text-white font-bold py-3 px-6 rounded-lg text-lg">
