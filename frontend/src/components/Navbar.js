@@ -35,7 +35,9 @@ const Navbar = () => {
               <li><Link to="/dashboard/goals" className="text-text-muted hover:text-primary font-medium transition-colors">Goals</Link></li>
               <li><Link to="/investments" className="text-text-muted hover:text-primary font-medium transition-colors">Investments</Link></li>
               <li><Link to="/bills" className="text-text-muted hover:text-primary font-medium transition-colors">Bills</Link></li>
-
+              <li>
+                <Link to="/ask-ai" className="text-primary-hover hover:text-primary font-semibold transition-colors">Ask AI</Link>
+              </li>
               <li>
                 <Link to="/profile" className="text-text-muted hover:text-primary font-medium transition-colors">
                   {/* Welcome, <span className="font-semibold text-text-light">{user.name}</span> */}
@@ -87,7 +89,7 @@ const Navbar = () => {
                 <li><Link to="/investments" onClick={closeMenu} className="text-2xl text-text-light hover:text-primary">Investments</Link></li>
                 <li><Link to="/bills" onClick={closeMenu} className="text-2xl text-text-light hover:text-primary">Bills</Link></li>
                 
-                <li><Link to="/ask-ai" className="text-primary-hover hover:text-primary font-semibold transition-colors">Ask AI</Link></li>
+                <li><Link to="/ask-ai" onClick={closeMenu} className="text-2xl text-primary-hover hover:text-primary font-semibold">Ask AI</Link></li>
                 
                 <li><Link to="/profile" onClick={closeMenu} className="text-2xl text-text-light hover:text-primary">Profile</Link></li>
                 <li>
