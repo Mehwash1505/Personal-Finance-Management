@@ -286,7 +286,7 @@ const ProfilePage = () => {
           </button>
         </form>
 
-        <hr classname="my-10 border-border" />
+        <hr className="my-10 border-border" />
 
         <div>
           <h2 className="text-2xl font-bold text-text-light mb-4">Two-Factor Authentication (2FA)</h2>
