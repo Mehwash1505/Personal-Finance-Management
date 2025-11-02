@@ -9,6 +9,7 @@ import MonthlySummaryChart from '../components/MonthlySummaryChart';
 import Spinner from '../components/Spinner';
 import ManualTransactionForm from '../components/ManualTransactionForm';
 import NetWorth from '../components/NetWorth';
+import FinancialHealthScore from '../components/FinancialHealthScore';
 import { useContext } from 'react'; 
 import AuthContext from '../context/AuthContext';
 import API_BASE_URL from '../config/api';
@@ -169,6 +170,11 @@ const DashboardPage = () => {
           <motion.div variants={itemVariants} className="bg-surface/80 backdrop-blur-xl border border-border p-6 rounded-xl shadow-2xl">
             <NetWorth />
           </motion.div>
+
+          <motion.div variants={itemVariants} className="bg-surface/80 backdrop-blur-xl border border-border p-6 rounded-xl shadow-2xl">
+            <FinancialHealthScore />
+          </motion.div>
+
           <motion.div variants={itemVariants} className="bg-surface/80 backdrop-blur-xl border border-border p-6 rounded-xl shadow-2xl">
             <ManualTransactionForm onTransactionAdded={fetchData} />
           </motion.div>
