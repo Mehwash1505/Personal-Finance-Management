@@ -1,5 +1,6 @@
 const { Configuration, PlaidApi, PlaidEnvironments, Products, CountryCode } = require('plaid');
 const User = require('../models/User.js');
+const Transaction = require('../models/Transaction.js');
 
 const configuration = new Configuration({
   basePath: PlaidEnvironments.sandbox,
@@ -240,6 +241,91 @@ const getInvestments = async (req, res) => {
   }
 };
 
+// Helper function (isko notificationService.js se copy kar lo ya yahan rakho)
+const getCurrentSpending = async (user) => {
+  let allTransactions = [];
+  if (user.plaidAccessToken) {
+    const plaidRequest = { access_token: user.plaidAccessToken };
+    const plaidResponse = await plaidClient.transactionsSync(plaidRequest);
+
+    plaidResponse.data.added.forEach(t => {
+      if (t.amount > 0) allTransactions.push({ category: t.personal_finance_category.primary, amount: t.amount });
+    });
+  }
+  const manualTransactions = await Transaction.find({ user: user._id, type: 'expense' });
+  manualTransactions.forEach(t => allTransactions.push({ category: t.category, amount: t.amount }));
+
+  const summary = allTransactions.reduce((acc, curr) => {
+    const category = curr.category || 'UNCATEGORIZED';
+    acc[category] = (acc[category] || 0) + curr.amount;
+    return acc;
+  }, {});
+
+  return summary;
+};
+
+// @desc    Calculate Financial Health Score
+// @route   GET /api/plaid/health-score
+// @access  Private
+const getHealthScore = async (req, res) => {
+  try {
+    const user = await User.findById(req.user.id);
+    if (!user || !user.plaidAccessToken) {
+      return res.status(400).json({ message: 'Plaid access token not found.' });
+    }
+    const accountsResponse = await plaidClient.accountsGet({ access_token: user.plaidAccessToken });
+    const creditAccounts = accountsResponse.data.accounts.filter(acc => acc.type === 'credit');
+    let totalCreditLimit = 0;
+    let totalCreditUsage = 0;
+    creditAccounts.forEach(acc => {
+      if (acc.balances.limit) { 
+        totalCreditLimit += acc.balances.limit;
+        totalCreditUsage += acc.balances.current;
+      }
+    });
+    let creditScore = 30;
+    if (totalCreditLimit > 0) {
+      const utilization = (totalCreditUsage / totalCreditLimit);
+      if (utilization > 0.3) creditScore = 15;
+      if (utilization > 0.7) creditScore = 5;
+    }
+    const plaidRequest = { access_token: user.plaidAccessToken };
+    const plaidResponse = await plaidClient.transactionsSync(plaidRequest);
+    const transactions = plaidResponse.data.added;
+    let totalIncome = 0;
+    let totalExpenses = 0;
+    transactions.forEach(t => {
+      if (t.amount < 0) totalIncome += Math.abs(t.amount); 
+      if (t.amount > 0) totalExpenses += t.amount;
+    });
+    let savingsScore = 0;
+    if (totalIncome > 0) {
+        const savingsRate = (totalIncome - totalExpenses) / totalIncome;
+        if (savingsRate > 0.2) savingsScore = 30; 
+        else if (savingsRate > 0) savingsScore = 15; 
+    }
+    const spending = await getCurrentSpending(user); 
+    let budgetScore = 0;
+    if (user.budgets && user.budgets.length > 0) {
+      let budgetsMet = 0;
+      user.budgets.forEach(budget => {
+        const spent = spending[budget.category] || 0;
+        if (spent <= budget.limit) {
+          budgetsMet++;
+        }
+      });
+      budgetScore = (budgetsMet / user.budgets.length) * 40;
+    } else {
+      budgetScore = 10; 
+    }
+    const finalScore = Math.round(creditScore + savingsScore + budgetScore);
+    res.json({ score: finalScore, creditScore, savingsScore, budgetScore });
+  } catch (error) {
+    console.error('Error calculating health score:', error.response ? error.response.data : error.message);
+    res.status(500).json({ message: 'Failed to calculate score.' });
+  }
+};
+
 module.exports = {
   createLinkToken,
   exchangePublicToken,
@@ -249,4 +335,5 @@ module.exports = {
   getMonthlySummary, //Add this to your exports
   getNetWorth,
   getInvestments,
+  getHealthScore,
 };
