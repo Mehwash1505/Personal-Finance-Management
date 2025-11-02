@@ -22,6 +22,7 @@ const plaidRoutes = require('./routes/plaidRoutes');
 const budgetRoutes = require('./routes/budgetRoutes');
 const { setupTransporter } = require('./config/mailer.js');
 const { startCronJobs } = require('./services/cronJobs.js');
+const aiRoutes = require('./routes/aiRoutes');
 
 // Connect to database
 connectDB();
@@ -91,6 +92,7 @@ app.use('/api/budgets', budgetRoutes);
 app.use('/api/transactions', transactionRoutes);
 app.use('/api/goals', goalRoutes);
 app.use('/api/bills', billRoutes);
+app.use('/api/ai', aiRoutes);
 
 app.get('/api/test-notifications', async (req, res) => {
   console.log('Manually triggering notification checks...');
