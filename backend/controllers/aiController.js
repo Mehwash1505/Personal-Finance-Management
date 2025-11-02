@@ -65,7 +65,7 @@ const askAiAdvisor = async (req, res) => {
     `;
 
     // 2. AI ke liye main prompt taiyar karo
-    const model = genAI.getGenerativeModel({ model: "gemini-pro" });
+    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
     const fullPrompt = `
       You are "Veritas", a professional and friendly AI financial advisor for a Personal Finance Management app.
       A user is asking for advice.
