@@ -5,7 +5,7 @@ A full-stack personal finance dashboard built with the MERN stack (MongoDB, Expr
 ![Dashboard Screenshot](path/to/your/screenshot.png) ---
 
 ## ✨ Features
-
+ 
 * **User Authentication**: Secure user registration and login using JWT (JSON Web Tokens).
 * **Plaid Integration**: Securely link multiple bank accounts using the Plaid API.
 * **Transaction Aggregation**: Fetches and displays recent transactions from all linked accounts.
