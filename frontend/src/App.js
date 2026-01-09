@@ -13,7 +13,7 @@ import InvestmentsPage from './pages/InvestmentsPage';
 import BillsPage from './pages/BillsPage';
 import { Toaster } from 'react-hot-toast';
 import Verify2FAPage from './pages/Verify2FAPage';
-import AskAiPage from './pages/AskAiPage';
+import AskAiPage from './pages/AskAiPage'; 
 
 function App() {
   return (
