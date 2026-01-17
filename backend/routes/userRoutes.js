@@ -7,7 +7,7 @@ const {
   changePassword, // Import
   generate2FASecret,
   verify2FA,
-  disable2FA,
+  disable2FA, 
   verify2FALogin,
 } = require('../controllers/userController');
 const { protect } = require('../middlewares/authMiddleware');
