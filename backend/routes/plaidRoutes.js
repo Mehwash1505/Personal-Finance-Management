@@ -4,7 +4,7 @@ const {
   createLinkToken,
   exchangePublicToken, 
   getTransactions,
-  getAccounts,
+  getAccounts, 
   getDataSummary,
   getMonthlySummary, // Importing  new function
   getNetWorth,
