@@ -3,7 +3,7 @@ const request = require('supertest');
 // We will need to export our app from server.js for testing
 const { app, server } = require('../server'); // We'll modify server.js for this
 const mongoose = require('mongoose');
-const User = require('../models/User');
+const User = require('../models/User'); 
 
 // Close the server and DB connection after all tests
 afterAll(async () => {
