@@ -5,4 +5,4 @@ const { protect } = require('../middlewares/authMiddleware');
 
 router.post('/ask', protect, askAiAdvisor);
 
-module.exports = router;
+module.exports = router; 
