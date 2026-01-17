@@ -1,6 +1,6 @@
 const nodemailer = require('nodemailer');
 
-let transporter;
+let transporter; 
 
 // Yeh function Ethereal se ek TEST account banayega
 const setupTransporter = async () => {
