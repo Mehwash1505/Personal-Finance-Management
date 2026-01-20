@@ -3,7 +3,7 @@ const User = require('../models/User.js');
 const Transaction = require('../models/Transaction.js');
 
 const configuration = new Configuration({
-  basePath: PlaidEnvironments.sandbox,
+  basePath: PlaidEnvironments.sandbox, 
   baseOptions: {
     headers: {
       'PLAID-CLIENT-ID': process.env.PLAID_CLIENT_ID,
