@@ -2,7 +2,7 @@ const Transaction = require('../models/Transaction.js');
 const { Parser } = require('json2csv'); // <-- Import Parser
 
 // @desc    Get manually added transactions for a user
-// @route   GET /api/transactions
+// @route   GET /api/transactions 
 // @access  Private
 const getTransactions = async (req, res) => {
   try {
