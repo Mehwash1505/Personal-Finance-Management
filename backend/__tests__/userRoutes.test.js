@@ -1,5 +1,5 @@
 // File: backend/__tests__/userRoutes.test.js
-const request = require('supertest');
+const request = require('supertest'); 
 // We will need to export our app from server.js for testing
 const { app, server } = require('../server'); // We'll modify server.js for this
 const mongoose = require('mongoose');
