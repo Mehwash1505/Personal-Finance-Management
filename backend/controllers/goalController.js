@@ -2,7 +2,7 @@ const Goal = require('../models/Goal.js');
 
 // @desc    Get all goals for a user
 // @route   GET /api/goals
-// @access  Private
+// @access  Private 
 const getGoals = async (req, res) => {
   const goals = await Goal.find({ user: req.user.id });
   res.status(200).json(goals);
