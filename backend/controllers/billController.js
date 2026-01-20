@@ -1,6 +1,6 @@
 // File: backend/controllers/billController.js
 const Bill = require('../models/Bill.js');
-
+ 
 // @desc    Get all bills for a user
 // @route   GET /api/bills
 // @access  Private
