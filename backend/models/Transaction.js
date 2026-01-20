@@ -8,7 +8,7 @@ const transactionSchema = mongoose.Schema(
       required: true,
       ref: 'User',
     },
-    name: {
+    name: { 
       type: String,
       required: [true, 'Please add a transaction name'],
     },
