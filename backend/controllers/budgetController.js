@@ -1,7 +1,7 @@
 // File: backend/controllers/budgetController.js
 
 const User = require('../models/User.js');
-
+ 
 // @desc    Get user's budgets
 // @route   GET /api/budgets
 // @access  Private
