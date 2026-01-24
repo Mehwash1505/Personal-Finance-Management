@@ -5,7 +5,7 @@ let transporter;
 // Yeh function Ethereal se ek TEST account banayega
 const setupTransporter = async () => {
   if (transporter) return transporter; // Sirf ek baar banao
-
+ 
   try {
     transporter = nodemailer.createTransport({
       host: process.env.EMAIL_HOST,
