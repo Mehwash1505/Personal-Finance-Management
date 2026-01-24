@@ -6,7 +6,7 @@ const Transaction = require('../models/Transaction');
 const { Configuration, PlaidApi, PlaidEnvironments } = require('plaid');
 
 // Plaid client config 
-const plaidConfig = new Configuration({
+const plaidConfig = new Configuration({ 
   basePath: PlaidEnvironments.sandbox,
   baseOptions: {
     headers: {
