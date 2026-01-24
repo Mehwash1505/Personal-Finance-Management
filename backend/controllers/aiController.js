@@ -5,7 +5,7 @@ const Goal = require('../models/Goal');
 const Transaction = require('../models/Transaction');
 const { Configuration, PlaidApi, PlaidEnvironments } = require('plaid');
 
-// Plaid client config
+// Plaid client config 
 const plaidConfig = new Configuration({
   basePath: PlaidEnvironments.sandbox,
   baseOptions: {
