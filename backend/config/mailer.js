@@ -3,7 +3,7 @@ const nodemailer = require('nodemailer');
 let transporter;  
 
 // Yeh function Ethereal se ek TEST account banayega
-const setupTransporter = async () => {
+const setupTransporter = async () => { 
   if (transporter) return transporter; // Sirf ek baar banao
  
   try {
