@@ -1,3 +1,5 @@
+//final file for mailer system
+
 const nodemailer = require('nodemailer');
 
 let transporter;  
