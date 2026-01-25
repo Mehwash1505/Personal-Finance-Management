@@ -49,3 +49,5 @@ describe('User API', () => {
     expect(res.body.message).toBe('User already exists');
   });
 });
+
+//final edited file
