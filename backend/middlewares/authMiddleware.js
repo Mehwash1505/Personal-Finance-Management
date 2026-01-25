@@ -1,3 +1,5 @@
+//middleware path corrected
+
 const jwt = require('jsonwebtoken');
 const User = require('../models/User.js');
  
