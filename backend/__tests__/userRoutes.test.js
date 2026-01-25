@@ -8,7 +8,7 @@ const User = require('../models/User');
 // Close the server and DB connection after all tests
 afterAll(async () => {
   await server.close();
-  await mongoose.connection.close();
+  await mongoose.connection.close(); 
 });
 
 describe('User API', () => {
