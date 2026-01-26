@@ -1,4 +1,4 @@
-
+// billRoute for js
 const express = require('express');
 const router = express.Router();
 const { getBills, addBill } = require('../controllers/billController');
