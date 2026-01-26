@@ -1,3 +1,4 @@
+// route for ai chat advisor
 const express = require('express');
 const router = express.Router();
 const { askAiAdvisor } = require('../controllers/aiController');
