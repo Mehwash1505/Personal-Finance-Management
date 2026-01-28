@@ -1,3 +1,4 @@
+// controllers/plaidController.js
 const { Configuration, PlaidApi, PlaidEnvironments, Products, CountryCode } = require('plaid');
 const User = require('../models/User.js');
 const Transaction = require('../models/Transaction.js');
