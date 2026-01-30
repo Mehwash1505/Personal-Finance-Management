@@ -6,7 +6,7 @@ import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import DashboardPage from './pages/DashboardPage';
 import ProtectedRoute from './components/ProtectedRoute';
-import PublicRoute from './components/PublicRoute'; // <-- 1. Import PublicRoute
+import PublicRoute from './components/PublicRoute'; // <-- Import PublicRoute
 import GoalsPage from './pages/GoalsPage';
 import ProfilePage from './pages/ProfilePage';
 import InvestmentsPage from './pages/InvestmentsPage';
