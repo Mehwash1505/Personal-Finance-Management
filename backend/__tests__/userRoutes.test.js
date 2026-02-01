@@ -10,7 +10,7 @@ afterAll(async () => {
   await server.close();
   await mongoose.connection.close(); 
 });
-
+ 
 describe('User API', () => {
   // Clear the users collection before each test
   beforeEach(async () => {
