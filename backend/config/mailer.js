@@ -17,7 +17,7 @@ const setupTransporter = async () => {
         user: process.env.EMAIL_USER,
         pass: process.env.EMAIL_PASS,
       },
-    });
+    }); 
 
     // Connection ko verify kar lete hain
     await transporter.verify();
